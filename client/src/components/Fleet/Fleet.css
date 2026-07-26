@@ -1,0 +1,581 @@
+.fleet-page {
+  flex: 1;
+  padding: 30px;
+  background: #f3f6fb;
+  min-height: calc(100vh - 80px);
+}
+
+.fleet-page h1 {
+  font-size: 40px;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.fleet-subtitle {
+  color: #6b7280;
+  margin-bottom: 30px;
+  font-size: 17px;
+}
+
+/* ===================== */
+/* TABLE CARD */
+/* ===================== */
+
+.fleet-table-card {
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.08);
+  overflow: hidden;
+}
+
+/* ===================== */
+/* TABLE */
+/* ===================== */
+
+.fleet-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.fleet-table thead {
+  background: #2563eb;
+  color: white;
+}
+
+.fleet-table th {
+  padding: 18px;
+  text-align: left;
+  font-size: 16px;
+}
+
+.fleet-table td {
+  padding: 16px 18px;
+  border-bottom: 1px solid #ececec;
+}
+
+.fleet-table tbody tr {
+  transition: .25s;
+}
+
+.fleet-table tbody tr:hover {
+  background: #eff6ff;
+}
+
+/* ===================== */
+/* STATUS */
+/* ===================== */
+
+.running {
+  background: #dcfce7;
+  color: #15803d;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-weight: bold;
+}
+
+.stopped {
+  background: #fee2e2;
+  color: #dc2626;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-weight: bold;
+}
+
+/* ===================== */
+/* DARK MODE */
+/* ===================== */
+
+body.dark .fleet-page {
+  background: #0f172a;
+}
+
+body.dark .fleet-page h1 {
+  color: white;
+}
+
+body.dark .fleet-subtitle {
+  color: #cbd5e1;
+}
+
+body.dark .fleet-table-card {
+  background: #1e293b;
+}
+
+body.dark .fleet-table td {
+  color: white;
+  border-bottom: 1px solid #334155;
+}
+
+body.dark .fleet-table tbody tr:hover {
+  background: #334155;
+}
+
+body.dark .running {
+  background: #166534;
+  color: #dcfce7;
+}
+
+body.dark .stopped {
+  background: #7f1d1d;
+  color: #fee2e2;
+}
+
+/* ===================== */
+/* RESPONSIVE */
+/* ===================== */
+
+@media (max-width: 768px) {
+  .fleet-page {
+    padding: 15px;
+  }
+
+  .fleet-table {
+    font-size: 14px;
+  }
+
+  .fleet-table th,
+  .fleet-table td {
+    padding: 10px;
+  }
+}
+/* ========================= */
+/* Toolbar */
+/* ========================= */
+
+.fleet-toolbar{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+}
+
+.fleet-search{
+  flex:1;
+  min-width:250px;
+  padding:12px 15px;
+  border:1px solid #d1d5db;
+  border-radius:10px;
+  font-size:16px;
+}
+
+.fleet-filter{
+  width:180px;
+  padding:12px;
+  border:1px solid #d1d5db;
+  border-radius:10px;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.no-data{
+  text-align:center;
+  padding:30px;
+  font-size:18px;
+  color:#666;
+  font-weight:bold;
+}
+
+/* Dark Mode */
+
+body.dark .fleet-search,
+body.dark .fleet-filter{
+  background:#1f2937;
+  color:white;
+  border:1px solid #374151;
+}
+
+body.dark .no-data{
+  color:#cbd5e1;
+}
+
+/* ===================== */
+/* Action Buttons */
+/* ===================== */
+
+.action-buttons{
+  display:flex;
+  gap:8px;
+}
+
+.action-buttons button{
+  border:none;
+  border-radius:6px;
+  padding:7px 12px;
+  cursor:pointer;
+  font-size:14px;
+  font-weight:600;
+  transition:.3s;
+}
+
+.view-btn{
+  background:#2563eb;
+  color:white;
+}
+
+.view-btn:hover{
+  background:#1d4ed8;
+}
+
+.edit-btn{
+  background:#f59e0b;
+  color:white;
+}
+
+.edit-btn:hover{
+  background:#d97706;
+}
+
+.delete-btn {
+  flex: 1;
+
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+
+  background: #ef4444;
+  color: white;
+
+  font-size: 16px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.delete-btn:hover {
+  background: #dc2626;
+}
+
+body.dark .action-buttons button{
+  color:white;
+}
+
+/* ========================= */
+/* Vehicle Modal */
+/* ========================= */
+
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.5);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:1000;
+}
+
+.vehicle-modal{
+  width:420px;
+  background:white;
+  border-radius:15px;
+  padding:30px;
+  box-shadow:0 15px 40px rgba(0,0,0,.3);
+  animation:popup .25s ease;
+}
+
+.vehicle-modal h2{
+  margin-bottom:20px;
+}
+
+.vehicle-modal p{
+  margin:12px 0;
+  font-size:17px;
+}
+
+.close-btn{
+  width:100%;
+  margin-top:20px;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  background:#2563eb;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.close-btn:hover{
+  background:#1d4ed8;
+}
+
+@keyframes popup{
+  from{
+    transform:scale(.8);
+    opacity:0;
+  }
+  to{
+    transform:scale(1);
+    opacity:1;
+  }
+}
+
+/* Dark Mode */
+
+body.dark .vehicle-modal{
+  background:#1f2937;
+  color:white;
+}
+
+/* ========================= */
+/* EDIT MODAL */
+/* ========================= */
+
+.vehicle-modal label {
+  display: block;
+  font-weight: 600;
+  margin-top: 15px;
+  margin-bottom: 6px;
+  color: #374151;
+}
+
+.vehicle-modal input,
+.vehicle-modal select {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+
+  font-size: 15px;
+  outline: none;
+
+  box-sizing: border-box;
+}
+
+.vehicle-modal input:focus,
+.vehicle-modal select:focus {
+  border-color: #2563eb;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.save-btn {
+  flex: 1;
+
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+
+  background: #16a34a;
+  color: white;
+
+  font-size: 16px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.save-btn:hover {
+  background: #15803d;
+}
+
+.close-btn {
+  flex: 1;
+}
+
+/* Dark Mode */
+
+body.dark .vehicle-modal label {
+  color: #f3f4f6;
+}
+
+body.dark .vehicle-modal input,
+body.dark .vehicle-modal select {
+  background: #1f2937;
+  color: white;
+  border: 1px solid #374151;
+}
+
+.fleet-header{
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom:20px;
+}
+
+.add-btn{
+  background:#2563eb;
+  color:white;
+  border:none;
+  padding:12px 22px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:15px;
+  font-weight:600;
+  transition:.3s;
+}
+
+.add-btn:hover{
+  background:#1d4ed8;
+}
+
+.pagination{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:20px;
+  margin:30px 0;
+}
+
+.pagination button{
+  background:#2563eb;
+  color:#fff;
+  border:none;
+  padding:10px 18px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:15px;
+  transition:.3s;
+}
+
+.pagination button:hover{
+  background:#1d4ed8;
+}
+
+.pagination span{
+  font-weight:600;
+  color:#374151;
+}
+
+body.dark .pagination span{
+  color:#fff;
+}
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.fleet-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.stat-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.stat-card h3 {
+  font-size: 30px;
+  color: #2563eb;
+  margin-bottom: 8px;
+}
+
+.stat-card p {
+  color: #666;
+  font-weight: 600;
+}
+/* Status Badge */
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    min-width: 90px;
+}
+
+.running {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.stopped {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+body.dark .running {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+}
+
+body.dark .stopped {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.loading-container {
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+
+.loader {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #e5e7eb;
+  border-top: 5px solid #2563eb;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.loading-container p {
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.export-btn {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-left: 10px;
+  transition: 0.3s;
+}
+
+.export-btn:hover {
+  background: #15803d;
+}
+
+.pdf-btn {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+   margin-left: 10px;
+  transition: 0.3s;
+}
+
+.pdf-btn:hover {
+  background: #b91c1c;
+}

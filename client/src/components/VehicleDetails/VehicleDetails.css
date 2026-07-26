@@ -1,0 +1,39 @@
+.details-card {
+  background: var(--card);
+  color: var(--text);
+
+  margin-top: 20px;
+  border-radius: 12px;
+  padding: 20px;
+
+  border: 1px solid var(--border);
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  transition: all 0.3s ease;
+}
+
+.details-card h2 {
+  margin-bottom: 20px;
+  color: var(--text);
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-row strong {
+  color: var(--subtext);
+}
+
+.detail-row span {
+  color: var(--text);
+  font-weight: 600;
+}
