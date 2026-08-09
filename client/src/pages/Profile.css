@@ -1,0 +1,183 @@
+/* ==========================================
+   Profile Page
+========================================== */
+
+.profile-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 30px;
+  min-height: calc(100vh - 80px);
+  background: #f8fafc;
+}
+
+/* ==========================================
+   Profile Card
+========================================== */
+
+.profile-card {
+  width: 100%;
+  max-width: 700px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  overflow: hidden;
+}
+
+/* ==========================================
+   Header
+========================================== */
+
+.profile-header {
+  background: linear-gradient(135deg,#2563eb,#1d4ed8);
+  color: white;
+  text-align: center;
+  padding: 35px 20px;
+}
+
+.profile-avatar {
+  font-size: 90px;
+  margin-bottom: 15px;
+}
+
+.profile-header h2 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.profile-header p {
+  opacity: .9;
+  font-size: 16px;
+}
+
+/* ==========================================
+   Body
+========================================== */
+
+.profile-body {
+  padding: 30px;
+}
+
+.profile-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.profile-row:last-child {
+  border-bottom: none;
+}
+
+.profile-row span {
+  font-weight: 600;
+  color: #64748b;
+}
+
+.profile-row strong {
+  color: #1e293b;
+  font-size: 16px;
+}
+
+/* ==========================================
+   Buttons
+========================================== */
+
+.profile-buttons {
+  display: flex;
+  gap: 15px;
+  padding: 25px 30px 30px;
+}
+
+.profile-buttons button {
+  flex: 1;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .3s;
+}
+
+.edit-btn {
+  background: #2563eb;
+  color: white;
+}
+
+.edit-btn:hover {
+  background: #1d4ed8;
+}
+
+.password-btn {
+  background: #16a34a;
+  color: white;
+}
+
+.password-btn:hover {
+  background: #15803d;
+}
+
+/* ==========================================
+   Dark Mode
+========================================== */
+
+body.dark .profile-page {
+  background: #0f172a;
+}
+
+body.dark .profile-card {
+  background: #1e293b;
+}
+
+body.dark .profile-row {
+  border-color: #334155;
+}
+
+body.dark .profile-row span {
+  color: #cbd5e1;
+}
+
+body.dark .profile-row strong {
+  color: white;
+}
+
+/* ==========================================
+   Responsive
+========================================== */
+
+@media (max-width:768px) {
+
+  .profile-page {
+    padding: 15px;
+  }
+
+  .profile-header {
+    padding: 25px 15px;
+  }
+
+  .profile-avatar {
+    font-size: 70px;
+  }
+
+  .profile-header h2 {
+    font-size: 26px;
+  }
+
+  .profile-body {
+    padding: 20px;
+  }
+
+  .profile-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .profile-buttons {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+}

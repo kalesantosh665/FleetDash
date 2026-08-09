@@ -1,0 +1,269 @@
+/* ==========================================
+   Live Map Page
+========================================== */
+
+.live-map-page {
+  padding: 25px;
+  background: #f8fafc;
+  min-height: 100%;
+}
+
+/* ==========================================
+   Header
+========================================== */
+
+.live-map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 25px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.live-map-header h1 {
+  font-size: 42px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.live-map-header p {
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 15px;
+}
+
+/* ==========================================
+   Stats Toolbar
+========================================== */
+
+.map-stats {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.stat-box {
+  min-width: 140px;
+  background: white;
+  border-radius: 14px;
+  padding: 14px 18px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  font-weight: 600;
+  color: #475569;
+
+  transition: .25s;
+}
+
+.stat-box:hover {
+  transform: translateY(-4px);
+}
+
+.stat-box span {
+  font-size: 24px;
+  font-weight: bold;
+  color: #2563eb;
+}
+
+/* ==========================================
+   Layout
+========================================== */
+
+.live-map-content{
+    width:100%;
+}
+
+/* ==========================================
+   Map
+========================================== */
+
+.map-panel{
+
+    position:relative;
+
+    width:100%;
+
+    height:80vh;
+
+    overflow:hidden;
+
+    border-radius:18px;
+
+    background:#fff;
+
+    box-shadow:0 12px 30px rgba(0,0,0,.08);
+
+    border:1px solid #e5e7eb;
+
+}
+
+/* ==========================================
+   Vehicle Details
+========================================== */
+.floating-details{
+
+    position:absolute;
+
+    top:20px;
+
+    right:20px;
+
+    width:320px;
+
+    z-index:1000;
+
+}
+
+/* Nice Scrollbar */
+
+.details-panel::-webkit-scrollbar {
+  width: 7px;
+}
+
+.details-panel::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 20px;
+}
+
+/* ==========================================
+   Dark Mode
+========================================== */
+
+body.dark .live-map-page {
+  background: #0f172a;
+}
+
+body.dark .live-map-header h1 {
+  color: white;
+}
+
+body.dark .live-map-header p {
+  color: #cbd5e1;
+}
+
+body.dark .stat-box {
+
+  background: #1e293b;
+
+  color: white;
+}
+
+body.dark .stat-box span {
+  color: #60a5fa;
+}
+
+body.dark .map-panel {
+
+  background: #1e293b;
+
+  border-color: #334155;
+}
+
+/* ==========================================
+   Tablet
+========================================== */
+
+@media (max-width:1100px){
+
+.live-map-content{
+
+grid-template-columns:1fr;
+
+}
+
+.map-panel{
+
+height:65vh;
+
+}
+
+.details-panel{
+
+width:100%;
+
+min-width:100%;
+
+max-width:100%;
+
+height:auto;
+
+}
+
+}
+
+/* ==========================================
+   Mobile
+========================================== */
+
+@media (max-width:768px){
+
+.live-map-page{
+
+padding:15px;
+
+}
+
+.live-map-header{
+
+flex-direction:column;
+
+align-items:flex-start;
+
+}
+
+.live-map-header h1{
+
+font-size:30px;
+
+}
+
+.map-stats{
+
+width:100%;
+
+}
+
+.stat-box{
+
+flex:1;
+
+min-width:110px;
+
+}
+
+.map-panel{
+
+height:55vh;
+
+}
+
+}
+
+@media(max-width:992px){
+
+.floating-details{
+
+position:relative;
+
+top:auto;
+
+right:auto;
+
+width:100%;
+
+margin-top:15px;
+
+}
+
+.map-panel{
+
+height:60vh;
+
+}
+
+}

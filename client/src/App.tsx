@@ -1,30 +1,47 @@
 import { useEffect, useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+
 import Navbar from "./components/Navbar/Navbar";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Dashboard from "./components/Dashboard/Dashboard";
 import Fleet from "./components/Fleet/Fleet";
-import { Toaster } from "react-hot-toast";
+import LiveMap from "./pages/LiveMap";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+import ProtectedRoute from "./pages/ProtectedRoute";
+import Alerts from "./pages/Alerts";
+import { useSocket } from "./context/SocketContext";
+import Analytics from "./pages/Analytics";
+import NotFound from "./pages/NotFound";
 import "./App.css";
 
 function App() {
   const [search, setSearch] = useState("");
-  const [activePage, setActivePage] = useState("dashboard");
+  const [activePage, setActivePage] =
+    useState("dashboard");
 
-  // Theme State
+  const { liveVehicles } = useSocket();
+
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("theme") || "light";
+    return (
+      localStorage.getItem("theme") ||
+      "light"
+    );
   });
 
-  // Save Theme
   useEffect(() => {
-  if (theme === "dark") {
-    document.body.classList.add("dark");
-  } else {
-    document.body.classList.remove("dark");
-  }
+    document.documentElement.dataset.theme = theme;
+    if (theme === "dark") {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
 
-  localStorage.setItem("theme", theme);
-}, [theme]);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
 
   return (
     <>
@@ -38,29 +55,93 @@ function App() {
         }}
       />
 
-      <div className="app">
-        <Navbar
-          search={search}
-          setSearch={setSearch}
-          theme={theme}
-          setTheme={setTheme}
+      <Routes>
+
+        <Route
+          path="/login"
+          element={<Login />}
         />
 
-        <div className="content">
-          <Sidebar
-            activePage={activePage}
-            setActivePage={setActivePage}
-          />
+        <Route
+          path="/register"
+          element={<Register />}
+        />
+<Route
+  path="/profile"
+  element={
+    <ProtectedRoute>
+      <Profile />
+    </ProtectedRoute>
+  }
+/>
 
-          {activePage === "dashboard" && (
-            <Dashboard search={search} />
-          )}
+<Route
+  path="/settings"
+  element={
+    <ProtectedRoute>
+      <Settings />
+    </ProtectedRoute>
+  }
+/>
 
-          {activePage === "fleet" && (
-            <Fleet />
-          )}
-        </div>
-      </div>
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+
+              <div className="app">
+
+                <Navbar
+                  search={search}
+                  setSearch={setSearch}
+                  theme={theme}
+                  setTheme={setTheme}
+                />
+
+                <div className="content">
+
+                  <Sidebar
+                    activePage={activePage}
+                    setActivePage={setActivePage}
+                  />
+
+                  {activePage === "dashboard" && (
+                    <Dashboard
+                      search={search}
+                      liveVehicles={
+                        liveVehicles ?? []
+                      }
+                    />
+                  )}
+{activePage === "map" && (
+  <LiveMap />
+)}
+{activePage === "analytics" && (
+  <Analytics />
+)}
+                  {activePage === "fleet" && (
+                    <Fleet />
+                  )}
+                 {activePage === "alerts" && (
+  <Alerts />
+)}
+                </div>
+
+              </div>
+
+            </ProtectedRoute>
+          }
+        />
+<Route
+  path="*"
+  element={<NotFound />}
+/>
+        <Route
+          path="*"
+          element={<Navigate to="/" replace />}
+        />
+
+      </Routes>
     </>
   );
 }

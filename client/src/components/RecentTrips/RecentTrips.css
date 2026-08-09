@@ -1,45 +1,560 @@
-.table-card{
-    margin-top:30px;
-    background:white;
-    padding:25px;
-    border-radius:15px;
-    box-shadow:0 4px 10px rgba(0,0,0,.08);
+/* =========================================
+   Recent Trips Card
+========================================= */
+
+.recent-trips-card {
+  width: 100%;
+
+  margin-top: 25px;
+
+  padding: 24px;
+
+  background: #ffffff;
+
+  border-radius: 20px;
+
+  border: 1px solid #eef2f7;
+
+  box-shadow:
+    0 10px 30px rgba(15, 23, 42, 0.07);
+
+  overflow: hidden;
 }
 
-.table-card h2{
-    margin-bottom:20px;
+/* =========================================
+   Header
+========================================= */
+
+.recent-trips-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  margin-bottom: 20px;
 }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-}
-.status-running{
-    color:#16a34a;
-    font-weight:bold;
+.recent-trips-title {
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
 }
 
-.status-idle{
-    color:#eab308;
-    font-weight:bold;
+.trips-icon {
+  width: 46px;
+  height: 46px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 14px;
+
+  background: #eff6ff;
+
+  font-size: 21px;
 }
 
-.status-stopped{
-    color:#dc2626;
-    font-weight:bold;
-}
-th{
-    background:#1e3a8a;
-    color:white;
-    padding:15px;
-    text-align:left;
+.recent-trips-title h2 {
+  margin: 0;
+
+  color: #0f172a;
+
+  font-size: 22px;
+
+  font-weight: 800;
 }
 
-td{
-    padding:15px;
-    border-bottom:1px solid #eee;
+.recent-trips-title p {
+  margin: 5px 0 0;
+
+  color: #64748b;
+
+  font-size: 13px;
 }
 
-tr:hover{
-    background:#f5f7fa;
+/* =========================================
+   Live Badge
+========================================= */
+
+.trips-live {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  padding: 7px 13px;
+
+  border-radius: 999px;
+
+  background: #ecfdf5;
+
+  color: #16a34a;
+
+  font-size: 12px;
+
+  font-weight: 700;
+}
+
+.trips-live-dot {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: #22c55e;
+
+  animation: tripsPulse 1.5s infinite;
+}
+
+/* =========================================
+   Summary
+========================================= */
+
+.trips-summary {
+  display: flex;
+
+  gap: 12px;
+
+  margin-bottom: 20px;
+}
+
+.summary-item {
+  min-width: 110px;
+
+  padding: 12px 16px;
+
+  border-radius: 12px;
+
+  background: #f8fafc;
+
+  border: 1px solid #eef2f7;
+}
+
+.summary-item strong {
+  display: block;
+
+  color: #0f172a;
+
+  font-size: 20px;
+
+  font-weight: 800;
+}
+
+.summary-item span {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #64748b;
+
+  font-size: 11px;
+
+  font-weight: 600;
+}
+
+.running-count {
+  color: #16a34a !important;
+}
+
+.stopped-count {
+  color: #ef4444 !important;
+}
+
+/* =========================================
+   Table
+========================================= */
+
+.trips-table-wrapper {
+  width: 100%;
+
+  overflow-x: auto;
+}
+
+.recent-trips-table {
+  width: 100%;
+
+  min-width: 650px;
+
+  border-collapse: collapse;
+}
+
+/* =========================================
+   Table Header
+========================================= */
+
+.recent-trips-table thead th {
+  padding: 13px 14px;
+
+  background: #f8fafc;
+
+  color: #64748b;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  text-align: left;
+
+  border-bottom: 1px solid #e2e8f0;
+
+  white-space: nowrap;
+}
+
+/* =========================================
+   Table Body
+========================================= */
+
+.recent-trips-table tbody td {
+  padding: 15px 14px;
+
+  color: #475569;
+
+  font-size: 13px;
+
+  border-bottom: 1px solid #f1f5f9;
+
+  white-space: nowrap;
+}
+
+.recent-trips-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.recent-trips-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+/* =========================================
+   Vehicle
+========================================= */
+
+.vehicle-cell {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+}
+
+.vehicle-mini-icon {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: #eff6ff;
+
+  font-size: 16px;
+}
+
+.vehicle-cell strong {
+  color: #0f172a;
+
+  font-size: 13px;
+}
+
+/* =========================================
+   Driver
+========================================= */
+
+.driver-cell {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+}
+
+.driver-avatar {
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #f1f5f9;
+
+  font-size: 13px;
+}
+
+/* =========================================
+   Status
+========================================= */
+
+.trip-status {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  padding: 6px 10px;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+
+  font-weight: 700;
+}
+
+.trip-status.running {
+  background: #ecfdf5;
+
+  color: #16a34a;
+}
+
+.trip-status.stopped {
+  background: #fef2f2;
+
+  color: #dc2626;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: currentColor;
+}
+
+/* =========================================
+   Speed
+========================================= */
+
+.speed-value {
+  color: #334155;
+
+  font-size: 13px;
+}
+
+/* =========================================
+   Time
+========================================= */
+
+.trip-time {
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+/* =========================================
+   Empty State
+========================================= */
+
+.no-trips {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-height: 220px;
+
+  text-align: center;
+
+  color: #64748b;
+}
+
+.no-trips div {
+  font-size: 42px;
+
+  margin-bottom: 10px;
+}
+
+.no-trips strong {
+  color: #334155;
+
+  font-size: 15px;
+}
+
+.no-trips p {
+  margin-top: 5px;
+
+  font-size: 12px;
+}
+
+/* =========================================
+   Footer
+========================================= */
+
+.trips-footer {
+  margin-top: 15px;
+
+  padding-top: 14px;
+
+  border-top: 1px solid #eef2f7;
+
+  color: #64748b;
+
+  font-size: 12px;
+
+  text-align: right;
+}
+
+/* =========================================
+   Animation
+========================================= */
+
+@keyframes tripsPulse {
+  0% {
+    transform: scale(1);
+
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.45);
+
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1);
+
+    opacity: 1;
+  }
+}
+
+/* =========================================
+   Dark Mode
+========================================= */
+
+body.dark .recent-trips-card {
+  background: #1e293b;
+
+  border-color: #334155;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .recent-trips-title h2,
+body.dark .vehicle-cell strong,
+body.dark .summary-item strong,
+body.dark .speed-value {
+  color: #ffffff;
+}
+
+body.dark .recent-trips-title p,
+body.dark .summary-item span,
+body.dark .trip-time {
+  color: #94a3b8;
+}
+
+body.dark .trips-icon {
+  background: #172554;
+}
+
+body.dark .summary-item {
+  background: #0f172a;
+
+  border-color: #334155;
+}
+
+body.dark .recent-trips-table thead th {
+  background: #0f172a;
+
+  color: #94a3b8;
+
+  border-color: #334155;
+}
+
+body.dark .recent-trips-table tbody td {
+  border-color: #334155;
+
+  color: #cbd5e1;
+}
+
+body.dark .recent-trips-table tbody tr:hover {
+  background: #263449;
+}
+
+body.dark .vehicle-mini-icon,
+body.dark .driver-avatar {
+  background: #334155;
+}
+
+body.dark .trips-footer {
+  border-color: #334155;
+
+  color: #94a3b8;
+}
+
+body.dark .no-trips strong {
+  color: #e2e8f0;
+}
+
+/* =========================================
+   Responsive
+========================================= */
+
+@media (max-width: 700px) {
+  .recent-trips-card {
+    padding: 16px;
+  }
+
+  .recent-trips-header {
+    align-items: flex-start;
+  }
+
+  .recent-trips-title h2 {
+    font-size: 19px;
+  }
+
+  .trips-summary {
+    display: grid;
+
+    grid-template-columns:
+      repeat(3, 1fr);
+  }
+
+  .summary-item {
+    min-width: 0;
+
+    padding: 10px;
+  }
+
+  .summary-item strong {
+    font-size: 17px;
+  }
+
+  .trips-live {
+    padding: 6px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .trips-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-item {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+  }
+
+  .summary-item span {
+    margin: 0;
+  }
 }

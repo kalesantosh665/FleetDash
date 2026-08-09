@@ -1,0 +1,76 @@
+/* Layout */
+
+.layout {
+  min-height: 100vh;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navbar खालील भाग */
+
+.layout-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Main Content */
+
+.layout-content {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  background: #f8fafc;
+  transition: all 0.3s ease;
+}
+
+/* Scrollbar */
+
+.layout-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.layout-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+}
+
+.layout-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Dark Theme */
+
+body.dark .layout {
+  background: #0f172a;
+}
+
+body.dark .layout-content {
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+body.dark .layout-content::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+/* Tablet */
+
+@media (max-width: 992px) {
+  .layout-content {
+    padding: 18px;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 768px) {
+  .layout-body {
+    flex-direction: column;
+  }
+
+  .layout-content {
+    padding: 15px;
+  }
+}

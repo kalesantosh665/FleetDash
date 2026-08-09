@@ -1,36 +1,74 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IVehicle extends Document {
-  vehicleNo: string;
+  id: number;
+  name: string;
   driver: string;
-  status: "Running" | "Stopped";
+
+  lat: number;
+  lng: number;
+
   speed: number;
-  location: string;
+  status: "Running" | "Stopped";
+
+  fuel: number;
+  battery: number;
+
+  route: [number, number][];
 }
 
 const VehicleSchema = new Schema(
   {
-    vehicleNo: {
-      type: String,
+    id: {
+      type: Number,
       required: true,
       unique: true,
     },
+
+    name: {
+      type: String,
+      required: true,
+    },
+
     driver: {
       type: String,
       required: true,
     },
+
+    lat: {
+      type: Number,
+      default: 18.5204,
+    },
+
+    lng: {
+      type: Number,
+      default: 73.8567,
+    },
+
+    speed: {
+      type: Number,
+      default: 0,
+    },
+
     status: {
       type: String,
       enum: ["Running", "Stopped"],
       default: "Stopped",
     },
-    speed: {
+
+    fuel: {
       type: Number,
-      default: 0,
+      default: 100,
     },
-    location: {
-      type: String,
-      default: "Unknown",
+
+    battery: {
+      type: Number,
+      default: 100,
+    },
+
+    route: {
+      type: [[Number]],
+      default: [],
     },
   },
   {
@@ -38,4 +76,7 @@ const VehicleSchema = new Schema(
   }
 );
 
-export default mongoose.model<IVehicle>("Vehicle", VehicleSchema);
+export default mongoose.model<IVehicle>(
+  "Vehicle",
+  VehicleSchema
+);

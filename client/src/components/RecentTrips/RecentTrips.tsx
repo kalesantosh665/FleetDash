@@ -1,116 +1,207 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
+import { useSocket } from "../../context/SocketContext";
 import "./RecentTrips.css";
 
 interface RecentTripsProps {
   search: string;
 }
 
-interface Trip {
-  vehicle: string;
-  driver: string;
-  status: string;
-  speed: string;
-  time: string;
-}
-
 function RecentTrips({ search }: RecentTripsProps) {
-  // Initial Trips
-  const [trips, setTrips] = useState<Trip[]>(() => {
-    const data: Trip[] = [];
+  const { liveVehicles } = useSocket();
 
-    for (let i = 1; i <= 50; i++) {
-      data.push({
-        vehicle: `Truck ${i}`,
-        driver: `Driver ${i}`,
-        status: Math.random() > 0.2 ? "Running" : "Stopped",
-        speed: `${40 + Math.floor(Math.random() * 40)} km/h`,
-        time: `${Math.floor(Math.random() * 10) + 1} min ago`,
-      });
-    }
+  const searchText = search.trim().toLowerCase();
 
-    return data;
-  });
+  const filteredVehicles = useMemo(() => {
+    return liveVehicles.filter((vehicle) => {
+      if (!searchText) {
+        return true;
+      }
 
-  // Live Update Every 3 Seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTrips((prev) =>
-        prev.map((trip) => ({
-          ...trip,
-          status: Math.random() > 0.2 ? "Running" : "Stopped",
-          speed: `${40 + Math.floor(Math.random() * 40)} km/h`,
-          time: "Just now",
-        }))
+      const vehicleName = vehicle.name
+        .toLowerCase()
+        .replace(/[-\s]/g, "");
+
+      const driverName = vehicle.driver
+        .toLowerCase()
+        .replace(/[-\s]/g, "");
+
+      const query = searchText.replace(/[-\s]/g, "");
+
+      return (
+        vehicleName.includes(query) ||
+        driverName.includes(query) ||
+         vehicle.id.toString() === query
       );
-    }, 3000);
+    });
+  }, [liveVehicles, searchText]);
 
-    return () => clearInterval(interval);
-  }, []);
+  const runningCount = filteredVehicles.filter(
+    (vehicle) => vehicle.status === "Running",
+  ).length;
 
-  // Search Filter
-  const filteredTrips = trips.filter((trip) => {
-    const searchText = search.trim().toLowerCase();
-
-    return (
-      searchText === "" ||
-      trip.vehicle.toLowerCase().includes(searchText) ||
-      trip.driver.toLowerCase().includes(searchText)
-    );
-  });
+  const stoppedCount = filteredVehicles.filter(
+    (vehicle) => vehicle.status === "Stopped",
+  ).length;
 
   return (
-    <div className="table-card">
-      <h2>🚚 Recent Trips</h2>
+    <section>
+      {/* Header */}
 
-      <table>
-        <thead>
-          <tr>
-            <th>Vehicle</th>
-            <th>Driver</th>
-            <th>Status</th>
-            <th>Speed</th>
-            <th>Last Update</th>
-          </tr>
-        </thead>
+      <div className="recent-trips-header">
+        <div className="recent-trips-title">
+          <div className="trips-icon">🚚</div>
 
-        <tbody>
-          {filteredTrips.map((trip, index) => (
-            <tr key={index}>
-              <td>{trip.vehicle}</td>
+          <div>
+            <h2>Recent Trips</h2>
 
-              <td>{trip.driver}</td>
+            <p>
+              Latest fleet vehicle activity
+            </p>
+          </div>
+        </div>
 
-              <td
-                className={
-                  trip.status === "Running"
-                    ? "status-running"
-                    : "status-stopped"
-                }
-              >
-                {trip.status}
-              </td>
+        <div className="trips-live">
+          <span className="trips-live-dot"></span>
+          Live
+        </div>
+      </div>
 
-              <td>{trip.speed}</td>
+      {/* Summary */}
 
-              <td>{trip.time}</td>
+      <div className="trips-summary">
+        <div className="summary-item">
+          <strong>
+            {filteredVehicles.length}
+          </strong>
+
+          <span>Vehicles</span>
+        </div>
+
+        <div className="summary-item">
+          <strong className="running-count">
+            {runningCount}
+          </strong>
+
+          <span>Running</span>
+        </div>
+
+        <div className="summary-item">
+          <strong className="stopped-count">
+            {stoppedCount}
+          </strong>
+
+          <span>Stopped</span>
+        </div>
+      </div>
+
+      {/* Table */}
+
+      <div className="trips-table-wrapper">
+        <table className="recent-trips-table">
+          <thead>
+            <tr>
+              <th>Vehicle</th>
+              <th>Driver</th>
+              <th>Status</th>
+              <th>Speed</th>
+              <th>Last Update</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
 
-      {filteredTrips.length === 0 && (
-        <p
-          style={{
-            textAlign: "center",
-            padding: "20px",
-            color: "#666",
-            fontWeight: "bold",
-          }}
-        >
-          🚚 No vehicle found.
-        </p>
+          <tbody>
+            {filteredVehicles
+              .slice(0, 10)
+              .map((vehicle) => (
+                <tr key={vehicle.id}>
+                  {/* Vehicle */}
+
+                  <td>
+                    <div className="vehicle-cell">
+                      <span className="vehicle-mini-icon">
+                        🚚
+                      </span>
+
+                      <strong>
+                        {vehicle.name}
+                      </strong>
+                    </div>
+                  </td>
+
+                  {/* Driver */}
+
+                  <td>
+                    <div className="driver-cell">
+                      <span className="driver-avatar">
+                        👤
+                      </span>
+
+                      {vehicle.driver}
+                    </div>
+                  </td>
+
+                  {/* Status */}
+
+                  <td>
+                    <span
+                      className={
+                        vehicle.status === "Running"
+                          ? "trip-status running"
+                          : "trip-status stopped"
+                      }
+                    >
+                      <span className="status-dot"></span>
+
+                      {vehicle.status}
+                    </span>
+                  </td>
+
+                  {/* Speed */}
+
+                  <td>
+                    <strong className="speed-value">
+                      {vehicle.speed} km/h
+                    </strong>
+                  </td>
+
+                  {/* Last Update */}
+
+                  <td>
+                    <span className="trip-time">
+                      Just now
+                    </span>
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+
+        {/* No Vehicles */}
+
+        {filteredVehicles.length === 0 && (
+          <div className="no-trips">
+            <div>🚚</div>
+
+            <strong>
+              No vehicle found
+            </strong>
+
+            <p>
+              Try searching another vehicle
+              or driver.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+
+      {filteredVehicles.length > 10 && (
+        <div className="trips-footer">
+          Showing 10 of{" "}
+          {filteredVehicles.length} vehicles
+        </div>
       )}
-    </div>
+    </section>
   );
 }
 

@@ -1,65 +1,221 @@
 import "./VehicleDetails.css";
-import "./VehicleDetails.css";
 import type { Vehicle } from "../../types/vehicle";
-
 
 interface Props {
   vehicle: Vehicle | null;
 }
 
 function VehicleDetails({ vehicle }: Props) {
+  // No vehicle selected
   if (!vehicle) {
     return (
-      <div className="details-card">
-        <h2>🚚 Vehicle Details</h2>
-        <p>Select a vehicle from the map.</p>
+      <div className="vehicle-details">
+        <div className="vehicle-header">
+          <div>
+            <h2>🚚 Vehicle Details</h2>
+          </div>
+        </div>
+
+        <div className="empty-state">
+          <div className="empty-icon">🚚</div>
+
+          <p>Select a vehicle from the map.</p>
+        </div>
       </div>
     );
   }
 
+  // =========================
+  // Real Vehicle Data
+  // =========================
+
+  const fuel = Math.round(vehicle.fuel);
+  const battery = Math.round(vehicle.battery);
+
+  const speedPercentage = Math.min(
+    Math.max(vehicle.speed, 0),
+    100,
+  );
+
+  const fuelPercentage = Math.min(
+    Math.max(fuel, 0),
+    100,
+  );
+
+  const batteryPercentage = Math.min(
+    Math.max(battery, 0),
+    100,
+  );
+
   return (
-    <div className="details-card">
-      <h2>{vehicle.name}</h2>
+    <div className="vehicle-details">
 
-      <div className="detail-row">
-        <strong>Driver</strong>
-        <span>{vehicle.driver}</span>
+      {/* =========================
+          Header
+      ========================= */}
+
+      <div className="vehicle-header">
+        <div>
+          <h2>🚚 Vehicle Details</h2>
+
+          <p>
+            Vehicle #{vehicle.id}
+          </p>
+        </div>
+
+        <span
+          className={
+            vehicle.status === "Running"
+              ? "status running"
+              : "status stopped"
+          }
+        >
+          {vehicle.status}
+        </span>
       </div>
 
-      <div className="detail-row">
-        <strong>Speed</strong>
-        <span>{vehicle.speed} km/h</span>
+      {/* =========================
+          Vehicle Name
+      ========================= */}
+
+      <div className="vehicle-name">
+        {vehicle.name}
       </div>
 
-      <div className="detail-row">
-        <strong>Status</strong>
-        <span>{vehicle.status}</span>
+      {/* =========================
+          Driver
+      ========================= */}
+
+      <div className="driver-card">
+        <div className="avatar">
+          👨‍✈️
+        </div>
+
+        <div>
+          <strong>
+            {vehicle.driver}
+          </strong>
+
+          <p>Fleet Driver</p>
+        </div>
       </div>
 
-      <div className="detail-row">
-        <strong>Latitude</strong>
-        <span>{vehicle.lat.toFixed(4)}</span>
+      {/* =========================
+          Speed
+      ========================= */}
+
+      <div className="speed-card">
+        <h3>Speed</h3>
+
+        <div className="speed-value">
+          {vehicle.speed}
+          <span> km/h</span>
+        </div>
+
+        <div className="progress">
+          <div
+            className="progress-fill speed-fill"
+            style={{
+              width: `${speedPercentage}%`,
+            }}
+          />
+        </div>
       </div>
 
-      <div className="detail-row">
-        <strong>Longitude</strong>
-        <span>{vehicle.lng.toFixed(4)}</span>
+      {/* =========================
+          Fuel
+      ========================= */}
+
+      <div className="metric">
+        <div className="metric-head">
+          <span>Fuel</span>
+
+          <span>
+            {fuel}%
+          </span>
+        </div>
+
+        <div className="progress">
+          <div
+            className="progress-fill"
+            style={{
+              width: `${fuelPercentage}%`,
+            }}
+          />
+        </div>
       </div>
 
-      <div className="detail-row">
-        <strong>Fuel</strong>
-        <span>{Math.floor(Math.random() * 40 + 60)}%</span>
+      {/* =========================
+          Battery
+      ========================= */}
+
+      <div className="metric">
+        <div className="metric-head">
+          <span>Battery</span>
+
+          <span>
+            {battery}%
+          </span>
+        </div>
+
+        <div className="progress">
+          <div
+            className="progress-fill battery"
+            style={{
+              width: `${batteryPercentage}%`,
+            }}
+          />
+        </div>
       </div>
 
-      <div className="detail-row">
-        <strong>Battery</strong>
-        <span>{Math.floor(Math.random() * 20 + 80)}%</span>
+      {/* =========================
+          Vehicle Information
+      ========================= */}
+
+      <div className="vehicle-info">
+
+        <div className="info-row">
+          <span>Vehicle ID</span>
+
+          <strong>
+            #{vehicle.id}
+          </strong>
+        </div>
+
+        <div className="info-row">
+          <span>Latitude</span>
+
+          <strong>
+            {vehicle.lat.toFixed(4)}
+          </strong>
+        </div>
+
+        <div className="info-row">
+          <span>Longitude</span>
+
+          <strong>
+            {vehicle.lng.toFixed(4)}
+          </strong>
+        </div>
+
+        <div className="info-row">
+          <span>Updated</span>
+
+          <strong>
+            Just Now
+          </strong>
+        </div>
+
       </div>
 
-      <div className="detail-row">
-        <strong>Updated</strong>
-        <span>Just Now</span>
-      </div>
+      {/* =========================
+          Route Button
+      ========================= */}
+
+      <button className="route-btn">
+        View Route
+      </button>
+
     </div>
   );
 }

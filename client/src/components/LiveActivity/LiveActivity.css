@@ -1,0 +1,555 @@
+/* =========================================
+   Live Activity Card
+========================================= */
+
+.activity-card {
+  width: 100%;
+
+  margin-top: 25px;
+
+  padding: 24px;
+
+  background: #ffffff;
+
+  border-radius: 20px;
+
+  border: 1px solid #eef2f7;
+
+  box-shadow:
+    0 10px 30px rgba(15, 23, 42, 0.07);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.activity-card:hover {
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 16px 35px rgba(15, 23, 42, 0.1);
+}
+
+/* =========================================
+   Header
+========================================= */
+
+.activity-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 18px;
+}
+
+.activity-title {
+  display: flex;
+
+  align-items: center;
+
+  gap: 13px;
+}
+
+.activity-icon {
+  width: 46px;
+  height: 46px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 14px;
+
+  background: #eff6ff;
+
+  color: #2563eb;
+
+  font-size: 18px;
+}
+
+.activity-title h2 {
+  margin: 0;
+
+  color: #0f172a;
+
+  font-size: 21px;
+
+  font-weight: 800;
+}
+
+.activity-title p {
+  margin: 5px 0 0;
+
+  color: #64748b;
+
+  font-size: 13px;
+}
+
+/* =========================================
+   History Button
+========================================= */
+
+.history-btn {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  border: none;
+
+  padding: 9px 13px;
+
+  border-radius: 10px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #2563eb,
+      #3b82f6
+    );
+
+  color: #ffffff;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.history-btn svg {
+  font-size: 9px;
+
+  transition:
+    transform 0.25s ease;
+}
+
+.history-btn:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+.history-btn:hover svg {
+  transform: translateX(3px);
+}
+
+/* =========================================
+   Summary
+========================================= */
+
+.activity-summary {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 12px;
+
+  padding: 8px 11px;
+
+  border-radius: 10px;
+
+  background: #f8fafc;
+}
+
+.activity-summary-live {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  color: #16a34a;
+
+  font-size: 10px;
+
+  font-weight: 800;
+}
+
+.activity-live-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #22c55e;
+
+  animation: activityPulse 1.4s infinite;
+}
+
+.activity-summary-text {
+  color: #64748b;
+
+  font-size: 11px;
+
+  font-weight: 600;
+}
+
+/* =========================================
+   Activity List
+========================================= */
+
+.activity-list {
+  max-height: 360px;
+
+  overflow-y: auto;
+
+  padding-right: 4px;
+}
+
+.activity-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.activity-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.activity-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+
+  border-radius: 20px;
+}
+
+/* =========================================
+   Activity Item
+========================================= */
+
+.activity-item {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 13px;
+
+  padding: 14px 5px;
+
+  border-bottom: 1px solid #f1f5f9;
+
+  transition:
+    background 0.2s ease,
+    padding 0.2s ease;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-item:hover {
+  padding-left: 9px;
+
+  background: #f8fafc;
+
+  border-radius: 10px;
+}
+
+/* =========================================
+   Vehicle Icon
+========================================= */
+
+.activity-vehicle-icon {
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 11px;
+
+  font-size: 14px;
+}
+
+.activity-vehicle-icon.running {
+  background: #ecfdf5;
+
+  color: #16a34a;
+}
+
+.activity-vehicle-icon.stopped {
+  background: #fef2f2;
+
+  color: #ef4444;
+}
+
+/* =========================================
+   Activity Info
+========================================= */
+
+.activity-info {
+  flex: 1;
+
+  min-width: 0;
+}
+
+.activity-top-row {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+}
+
+.activity-info strong {
+  color: #0f172a;
+
+  font-size: 14px;
+
+  font-weight: 750;
+}
+
+.activity-info p {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  margin: 5px 0;
+
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+.activity-info small {
+  color: #94a3b8;
+
+  font-size: 10px;
+}
+
+/* =========================================
+   Status Badge
+========================================= */
+
+.activity-status {
+  padding: 4px 8px;
+
+  border-radius: 999px;
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.4px;
+}
+
+.activity-status.running {
+  background: #dcfce7;
+
+  color: #16a34a;
+}
+
+.activity-status.stopped {
+  background: #fee2e2;
+
+  color: #dc2626;
+}
+
+/* =========================================
+   Message Icon
+========================================= */
+
+.activity-message-icon {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 9px;
+}
+
+.activity-message-icon.running {
+  color: #16a34a;
+}
+
+.activity-message-icon.stopped {
+  color: #ef4444;
+}
+
+/* =========================================
+   Empty State
+========================================= */
+
+.empty-activity {
+  min-height: 220px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+
+  color: #64748b;
+}
+
+.empty-activity-icon {
+  width: 52px;
+  height: 52px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 12px;
+
+  border-radius: 50%;
+
+  background: #eff6ff;
+
+  color: #2563eb;
+
+  font-size: 20px;
+}
+
+.empty-activity strong {
+  color: #334155;
+
+  font-size: 14px;
+}
+
+.empty-activity p {
+  margin: 5px 0 0;
+
+  color: #94a3b8;
+
+  font-size: 12px;
+}
+
+/* =========================================
+   Animation
+========================================= */
+
+@keyframes activityPulse {
+  0% {
+    transform: scale(1);
+
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.5);
+
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1);
+
+    opacity: 1;
+  }
+}
+
+/* =========================================
+   Dark Mode
+========================================= */
+
+body.dark .activity-card {
+  background: #1e293b;
+
+  border-color: #334155;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .activity-title h2,
+body.dark .activity-info strong,
+body.dark .empty-activity strong {
+  color: #ffffff;
+}
+
+body.dark .activity-title p,
+body.dark .activity-info p,
+body.dark .activity-summary-text,
+body.dark .empty-activity p {
+  color: #94a3b8;
+}
+
+body.dark .activity-icon {
+  background: #172554;
+
+  color: #60a5fa;
+}
+
+body.dark .activity-summary {
+  background: #0f172a;
+}
+
+body.dark .activity-item {
+  border-color: #334155;
+}
+
+body.dark .activity-item:hover {
+  background: #263449;
+}
+
+body.dark .activity-vehicle-icon.running {
+  background: #052e16;
+}
+
+body.dark .activity-vehicle-icon.stopped {
+  background: #450a0a;
+}
+
+body.dark .activity-list::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+/* =========================================
+   Responsive
+========================================= */
+
+@media (max-width: 700px) {
+  .activity-card {
+    padding: 17px;
+  }
+
+  .activity-header {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .history-btn {
+    width: 100%;
+
+    justify-content: center;
+  }
+
+  .activity-title h2 {
+    font-size: 19px;
+  }
+
+  .activity-top-row {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 5px;
+  }
+}

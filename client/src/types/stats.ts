@@ -1,6 +1,6 @@
 export interface Stats {
-  vehicles: number;
-  drivers: number;
-  trips: number;
-  alerts: number;
+  totalVehicles: number;
+  runningVehicles: number;
+  stoppedVehicles: number;
+  averageSpeed: number;
 }

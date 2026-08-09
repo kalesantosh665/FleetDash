@@ -1,0 +1,217 @@
+/* ==========================================
+   Settings Page
+========================================== */
+
+.settings-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 30px;
+  min-height: calc(100vh - 80px);
+  background: #f8fafc;
+}
+
+/* ==========================================
+   Settings Card
+========================================== */
+
+.settings-card {
+  width: 100%;
+  max-width: 850px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  overflow: hidden;
+  padding: 30px;
+}
+
+.settings-card h1 {
+  font-size: 36px;
+  color: #1e293b;
+  margin-bottom: 30px;
+}
+
+/* ==========================================
+   Setting Item
+========================================== */
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 0;
+  border-bottom: 1px solid #e5e7eb;
+  gap: 20px;
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-item h3 {
+  font-size: 20px;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.setting-item p {
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* ==========================================
+   Switch
+========================================== */
+
+.switch {
+  position: relative;
+  width: 60px;
+  height: 32px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  inset: 0;
+  background: #d1d5db;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: .3s;
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  left: 4px;
+  top: 4px;
+  background: white;
+  border-radius: 50%;
+  transition: .3s;
+}
+
+.switch input:checked + .slider {
+  background: #2563eb;
+}
+
+.switch input:checked + .slider::before {
+  transform: translateX(28px);
+}
+
+/* ==========================================
+   Select
+========================================== */
+
+.setting-item select {
+  width: 180px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  outline: none;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+/* ==========================================
+   Buttons
+========================================== */
+
+.action-btn,
+.logout-btn {
+
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: .3s;
+
+}
+
+.action-btn {
+  background: #2563eb;
+  color: white;
+}
+
+.action-btn:hover {
+  background: #1d4ed8;
+}
+
+.logout-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+}
+
+/* ==========================================
+   Dark Mode
+========================================== */
+
+body.dark .settings-page {
+  background: #0f172a;
+}
+
+body.dark .settings-card {
+  background: #1e293b;
+}
+
+body.dark .settings-card h1 {
+  color: white;
+}
+
+body.dark .setting-item {
+  border-color: #334155;
+}
+
+body.dark .setting-item h3 {
+  color: white;
+}
+
+body.dark .setting-item p {
+  color: #cbd5e1;
+}
+
+body.dark .setting-item select {
+  background: #334155;
+  color: white;
+  border-color: #475569;
+}
+
+/* ==========================================
+   Responsive
+========================================== */
+
+@media (max-width:768px) {
+
+  .settings-page {
+    padding: 15px;
+  }
+
+  .settings-card {
+    padding: 20px;
+  }
+
+  .settings-card h1 {
+    font-size: 28px;
+  }
+
+  .setting-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .setting-item select,
+  .action-btn,
+  .logout-btn {
+    width: 100%;
+  }
+
+}

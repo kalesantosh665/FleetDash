@@ -1,48 +1,8 @@
-
-
-.truck-marker {
-  font-size: 32px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: transform 0.3s ease, filter 0.3s ease;
-}
-
-.running {
-  animation: pulseTruck 1.5s infinite;
-  filter: drop-shadow(0 0 8px #22c55e);
-}
-
-.stopped {
-  opacity: 0.75;
-  filter: grayscale(0.2);
-}
-
-.selected {
-  animation: selectedPulse 0.8s infinite;
-  filter: drop-shadow(0 0 15px #3b82f6);
-}
-
-@keyframes pulseTruck {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.15);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-@keyframes selectedPulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.3);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
+.map-placeholder { position: relative; width: 100%; height: 100%; min-height: 320px; overflow: hidden; border-radius: 20px; }.map-placeholder .leaflet-container { width: 100%; height: 100%; border-radius: inherit; }
+.truck-marker { display: grid; width: 42px; height: 42px; place-items: center; border: 3px solid #fff; border-radius: 50%; color: #0f172a; background: rgb(255 255 255 / 95%); box-shadow: 0 6px 18px rgb(15 23 42 / 25%); }.truck-marker svg { width: 24px; height: 24px; fill: currentColor; }.truck-marker.running { color: #15803d; animation: marker-pulse 1.6s infinite; }.truck-marker.stopped { color: #dc2626; opacity: .9; }.truck-marker.selected { width: 48px; height: 48px; color: #1d4ed8; border-color: #2563eb; box-shadow: 0 0 0 6px rgb(37 99 235 / 18%), 0 10px 25px rgb(37 99 235 / 30%); animation: selected-pulse 1.5s infinite; }
+.map-overlay { position: absolute; top: 20px; right: 20px; pointer-events: none; }.overlay-card { width: 210px; padding: 18px; border: 1px solid rgb(255 255 255 / 55%); border-radius: 18px; color: #0f172a; background: rgb(255 255 255 / 92%); box-shadow: 0 15px 35px rgb(15 23 42 / 12%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }.overlay-live { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #16a34a; font-size: 13px; font-weight: 800; text-transform: uppercase; }.live-dot { width: 9px; height: 9px; border-radius: 50%; background: currentColor; }.overlay-card h3 { margin: 0; font-size: 38px; line-height: 1; }.overlay-card p { margin: 5px 0 17px; color: #64748b; }.overlay-stats { display: grid; gap: 8px; font-size: 14px; }.overlay-stats span { display: flex; justify-content: space-between; }.overlay-stats strong { font-variant-numeric: tabular-nums; }
+.leaflet-control-zoom { overflow: hidden; border: 0 !important; border-radius: 14px; box-shadow: 0 10px 25px rgb(15 23 42 / 15%); }.leaflet-control-zoom a { width: 40px; height: 40px; line-height: 40px; color: #2563eb; }.leaflet-control-attribution { background: rgb(255 255 255 / 90%) !important; font-size: 11px; }
+:is(body.dark, html[data-theme="dark"]) .overlay-card { border-color: #475569; color: #f8fafc; background: rgb(30 41 59 / 94%); }:is(body.dark, html[data-theme="dark"]) .overlay-card p, :is(body.dark, html[data-theme="dark"]) .leaflet-control-attribution { color: #cbd5e1; background: #1e293b !important; }
+@keyframes marker-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } } @keyframes selected-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+@media (max-width: 768px) { .map-placeholder { height: 420px; min-height: 420px; }.map-overlay { top: 12px; right: 12px; }.overlay-card { width: 160px; padding: 12px; }.overlay-card h3 { font-size: 30px; }.overlay-card p { margin-bottom: 10px; }.overlay-stats { font-size: 12px; } }
+@media (prefers-reduced-motion: reduce) { .truck-marker { animation: none !important; } }

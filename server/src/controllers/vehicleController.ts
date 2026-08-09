@@ -1,9 +1,13 @@
 import { Request, Response } from "express";
 import Vehicle from "../models/Vehicle";
 
-// Get All Vehicles
-export const getVehicles = async (req: Request, res: Response) => {
-    
+// GET ALL
+export const getVehicles = async (
+  req: Request,
+  res: Response
+) => {
+  console.log("🚗 getVehicles Called");
+
   try {
     const vehicles = await Vehicle.find();
 
@@ -12,15 +16,21 @@ export const getVehicles = async (req: Request, res: Response) => {
       count: vehicles.length,
       data: vehicles,
     });
-  } catch (error) {
+  } catch (err) {
+    console.error(err);
+
     res.status(500).json({
       success: false,
       message: "Failed to fetch vehicles",
     });
   }
 };
-// Get Single Vehicle
-export const getVehicle = async (req: Request, res: Response) => {
+
+// GET SINGLE
+export const getVehicle = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const vehicle = await Vehicle.findById(req.params.id);
 
@@ -35,15 +45,21 @@ export const getVehicle = async (req: Request, res: Response) => {
       success: true,
       data: vehicle,
     });
-  } catch (error) {
+  } catch (err) {
+    console.error(err);
+
     res.status(500).json({
       success: false,
       message: "Failed to fetch vehicle",
     });
   }
 };
-// Add Vehicle
-export const addVehicle = async (req: Request, res: Response) => {
+
+// CREATE
+export const addVehicle = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const vehicle = await Vehicle.create(req.body);
 
@@ -51,15 +67,21 @@ export const addVehicle = async (req: Request, res: Response) => {
       success: true,
       data: vehicle,
     });
-  } catch (error) {
+  } catch (err) {
+    console.error(err);
+
     res.status(500).json({
       success: false,
       message: "Failed to create vehicle",
     });
   }
 };
-// Update Vehicle
-export const updateVehicle = async (req: Request, res: Response) => {
+
+// UPDATE
+export const updateVehicle = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const vehicle = await Vehicle.findByIdAndUpdate(
       req.params.id,
@@ -81,7 +103,9 @@ export const updateVehicle = async (req: Request, res: Response) => {
       success: true,
       data: vehicle,
     });
-  } catch (error) {
+  } catch (err) {
+    console.error(err);
+
     res.status(500).json({
       success: false,
       message: "Failed to update vehicle",
@@ -89,10 +113,15 @@ export const updateVehicle = async (req: Request, res: Response) => {
   }
 };
 
-// Delete Vehicle
-export const deleteVehicle = async (req: Request, res: Response) => {
+// DELETE
+export const deleteVehicle = async (
+  req: Request,
+  res: Response
+) => {
   try {
-    const vehicle = await Vehicle.findByIdAndDelete(req.params.id);
+    const vehicle = await Vehicle.findByIdAndDelete(
+      req.params.id
+    );
 
     if (!vehicle) {
       return res.status(404).json({
@@ -105,11 +134,12 @@ export const deleteVehicle = async (req: Request, res: Response) => {
       success: true,
       message: "Vehicle deleted successfully",
     });
-  } catch (error) {
+  } catch (err) {
+    console.error(err);
+
     res.status(500).json({
       success: false,
       message: "Failed to delete vehicle",
     });
   }
 };
-
