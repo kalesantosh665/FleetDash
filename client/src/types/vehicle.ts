@@ -1,4 +1,6 @@
 export interface Vehicle {
+  _id?: string;
+
   id: number;
   name: string;
   driver: string;

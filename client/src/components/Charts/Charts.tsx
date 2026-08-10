@@ -31,12 +31,7 @@ interface ChartsProps {
 }
 
 function Charts({ stats }: ChartsProps) {
-  /*
-   * Current dashboard metrics.
-   *
-   * We are not creating fake historical data.
-   * These values come directly from the existing API stats.
-   */
+ 
 
   const lineData = [
     {

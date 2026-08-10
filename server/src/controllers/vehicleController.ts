@@ -32,7 +32,9 @@ export const getVehicle = async (
   res: Response
 ) => {
   try {
-    const vehicle = await Vehicle.findById(req.params.id);
+    const vehicle = await Vehicle.findOne({
+  id: Number(req.params.id),
+});
 
     if (!vehicle) {
       return res.status(404).json({
@@ -83,14 +85,14 @@ export const updateVehicle = async (
   res: Response
 ) => {
   try {
-    const vehicle = await Vehicle.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+ const vehicle = await Vehicle.findOneAndUpdate(
+  { id: Number(req.params.id) },
+  req.body,
+  {
+    new: true,
+    runValidators: true,
+  }
+);
 
     if (!vehicle) {
       return res.status(404).json({
@@ -119,9 +121,9 @@ export const deleteVehicle = async (
   res: Response
 ) => {
   try {
-    const vehicle = await Vehicle.findByIdAndDelete(
-      req.params.id
-    );
+    const vehicle = await Vehicle.findOneAndDelete({
+      id: Number(req.params.id),
+    });
 
     if (!vehicle) {
       return res.status(404).json({

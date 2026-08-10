@@ -1,708 +1,348 @@
+import { useEffect, useMemo, useState, type FormEvent } from "react";
+import toast from "react-hot-toast";
 import api from "../../services/api";
 import Charts from "../Charts/Charts";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+
 import "./Fleet.css";
 
+type Status = "Running" | "Stopped";
 interface Vehicle {
   _id: string;
-  vehicleNo: string;
+  id: number;
+  name: string;
   driver: string;
-  status: "Running" | "Stopped";
+  lat: number;
+  lng: number;
   speed: number;
-  location: string;
+  status: Status;
+  fuel: number;
+  battery: number;
+  route: [number, number][];
+}
+interface RawVehicle extends Partial<Vehicle> {
+  vehicleNo?: string;
+  location?: string;
+}
+type VehicleDraft = Omit<Vehicle, "_id" | "route">;
+const emptyDraft = (): VehicleDraft => ({
+  id: 0,
+  name: "",
+  driver: "",
+  lat: 18.5204,
+  lng: 73.8567,
+  speed: 0,
+  status: "Stopped",
+  fuel: 100,
+  battery: 100,
+});
+const numberOr = (value: unknown, fallback: number) =>
+  typeof value === "number" && Number.isFinite(value) ? value : fallback;
+/** Supports legacy API data while the backend migrates from vehicleNo/location to name/lat/lng. */
+function normalizeVehicle(raw: RawVehicle, index: number): Vehicle {
+  return {
+    _id: raw._id ?? `legacy-${index}`,
+    id: numberOr(raw.id, index + 1),
+    name: raw.name?.trim() || raw.vehicleNo?.trim() || `Vehicle ${index + 1}`,
+    driver: raw.driver?.trim() || "Unassigned",
+    lat: numberOr(raw.lat, 18.5204),
+    lng: numberOr(raw.lng, 73.8567),
+    speed: numberOr(raw.speed, 0),
+    status: raw.status === "Running" ? "Running" : "Stopped",
+    fuel: numberOr(raw.fuel, 100),
+    battery: numberOr(raw.battery, 100),
+    route: Array.isArray(raw.route) ? raw.route : [],
+  };
 }
 
 function Fleet() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
-  const [sortBy, setSortBy] = useState("Default");
-  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
+  const [query, setQuery] = useState("");
+  const [status, setStatus] = useState<"All" | Status>("All");
   const [loading, setLoading] = useState(true);
-  const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null);
+  const [editing, setEditing] = useState<Vehicle | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [draft, setDraft] = useState<VehicleDraft>(emptyDraft());
 
-  const [addVehicle, setAddVehicle] = useState(false);
-
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const vehiclesPerPage = 10;
-
-  const [newVehicle, setNewVehicle] = useState<Vehicle>({
-    _id: "",
-    vehicleNo: "",
-    driver: "",
-    speed: 50,
-    status: "Running",
-    location: "",
-  });
-
-  const [deleteVehicle, setDeleteVehicle] = useState<Vehicle | null>(null);
-  const fetchVehicles = async () => {
-  try {
-     setLoading(true);
-    const response = await api.get("/vehicles");
-    setVehicles(response.data.data);
-  } catch (error) {
-    console.error(error);
-     toast.error("Failed to fetch vehicles");
-  } finally {
-    setLoading(false);
-  }
-};
   useEffect(() => {
-    fetchVehicles();
+    let active = true;
+    (async () => {
+      try {
+        const response = await api.get("/vehicles");
+        const rawVehicles = Array.isArray(response.data.data)
+          ? (response.data.data as RawVehicle[])
+          : [];
+        if (active) setVehicles(rawVehicles.map(normalizeVehicle));
+      } catch {
+        toast.error("Failed to load fleet vehicles");
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
   }, []);
 
-  const filteredVehicles = vehicles.filter((vehicle) => {
-    const matchesSearch =
-      vehicle.vehicleNo.toLowerCase().includes(search.toLowerCase()) ||
-      vehicle.driver.toLowerCase().includes(search.toLowerCase());
-
-    const matchesStatus =
-      statusFilter === "All" || vehicle.status === statusFilter;
-
-    return matchesSearch && matchesStatus;
-  });
-  const sortedVehicles = [...filteredVehicles];
-
-  switch (sortBy) {
-    case "SpeedLow":
-      sortedVehicles.sort((a, b) => a.speed - b.speed);
-      break;
-
-    case "SpeedHigh":
-      sortedVehicles.sort((a, b) => b.speed - a.speed);
-      break;
-
-    case "NameAZ":
-      sortedVehicles.sort((a, b) => a.vehicleNo.localeCompare(b.vehicleNo));
-      break;
-
-    case "NameZA":
-      sortedVehicles.sort((a, b) => b.vehicleNo.localeCompare(a.vehicleNo));
-      break;
-  }
-  
-const totalVehicles = filteredVehicles.length;
-
-const runningVehicles = filteredVehicles.filter(
-  (v) => v.status === "Running"
-).length;
-
-const stoppedVehicles = filteredVehicles.filter(
-  (v) => v.status === "Stopped"
-).length;
- 
-  const averageSpeed =
-    vehicles.length > 0
-      ? Math.round(
-          vehicles.reduce((sum, v) => sum + v.speed, 0) / vehicles.length,
-        )
-      : 0;
-  // Pagination calculations
-  const indexOfLastVehicle = currentPage * vehiclesPerPage;
-
-  const indexOfFirstVehicle = indexOfLastVehicle - vehiclesPerPage;
-
-  const currentVehicles = sortedVehicles.slice(
-    indexOfFirstVehicle,
-    indexOfLastVehicle,
+  const filtered = useMemo(
+    () =>
+      vehicles.filter(
+        (vehicle) =>
+          (status === "All" || vehicle.status === status) &&
+          [vehicle.name, vehicle.driver, String(vehicle.id)].some((value) =>
+            value.toLowerCase().includes(query.trim().toLowerCase()),
+          ),
+      ),
+    [vehicles, query, status],
   );
+  const stats = useMemo(() => {
+    const runningVehicles = vehicles.filter(
+      (v) => v.status === "Running",
+    ).length;
+    const totalVehicles = vehicles.length;
+    return {
+      totalVehicles,
+      runningVehicles,
+      stoppedVehicles: totalVehicles - runningVehicles,
+      averageSpeed: totalVehicles
+        ? Math.round(
+            vehicles.reduce((sum, v) => sum + v.speed, 0) / totalVehicles,
+          )
+        : 0,
+    };
+  }, [vehicles]);
+  const updateDraft = (
+    key: keyof VehicleDraft,
+    value: string | number | Status,
+  ) => setDraft((current) => ({ ...current, [key]: value }) as VehicleDraft);
 
-  const totalPages = Math.ceil(sortedVehicles.length / vehiclesPerPage);
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [search, statusFilter]);
-  useEffect(() => {
-    if (currentPage > totalPages && totalPages > 0) {
-      setCurrentPage(totalPages);
+  const save = async (event: FormEvent) => {
+    event.preventDefault();
+    try {
+      if (editing) {
+        const response = await api.put(`/vehicles/${editing._id}`, draft);
+        const updated = normalizeVehicle(response.data.data as RawVehicle, 0);
+        setVehicles((current) =>
+          current.map((item) => (item._id === editing._id ? updated : item)),
+        );
+        toast.success("Vehicle updated");
+      } else {
+        const response = await api.post("/vehicles", draft);
+        setVehicles((current) => [
+          ...current,
+          normalizeVehicle(response.data.data as RawVehicle, current.length),
+        ]);
+        toast.success("Vehicle added");
+      }
+      setEditing(null);
+      setCreating(false);
+    } catch {
+      toast.error("Unable to save vehicle. Check all fields.");
     }
-  }, [sortedVehicles.length, totalPages, currentPage]);
- const exportToExcel = () => {
-  const data = vehicles.map((vehicle) => ({
-    "Vehicle No": vehicle.vehicleNo,
-    Driver: vehicle.driver,
-    Location: vehicle.location,
-    Speed: `${vehicle.speed} km/h`,
-    Status: vehicle.status,
-  }));
+  };
+  const remove = async (vehicle: Vehicle) => {
+    if (!window.confirm(`Delete ${vehicle.name}?`)) return;
+    try {
+      await api.delete(`/vehicles/${vehicle._id}`);
+      setVehicles((current) =>
+        current.filter((item) => item._id !== vehicle._id),
+      );
+      toast.success("Vehicle deleted");
+    } catch {
+      toast.error("Unable to delete vehicle");
+    }
+  };
+  const openCreate = () => {
+    setDraft(emptyDraft());
+    setCreating(true);
+  };
+  const openEdit = (vehicle: Vehicle) => {
+    const { _id, route, ...nextDraft } = vehicle;
+    setDraft(nextDraft);
+    setEditing(vehicle);
+  };
 
-  const worksheet = XLSX.utils.json_to_sheet(data);
-  const workbook = XLSX.utils.book_new();
-
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Fleet");
-
-  const excelBuffer = XLSX.write(workbook, {
-    bookType: "xlsx",
-    type: "array",
-  });
-
-  const file = new Blob([excelBuffer], {
-    type:
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
-  });
-
-  saveAs(file, "Fleet_Report.xlsx");
-  toast.success("Excel exported successfully");
-};
-const exportToPDF = () => {
-  const doc = new jsPDF();
-
-  doc.setFontSize(18);
-  doc.text("Fleet Report", 14, 20);
-
-  autoTable(doc, {
-    startY: 30,
-    head: [["Vehicle No", "Driver", "Location", "Speed", "Status"]],
-    body: vehicles.map((vehicle) => [
-      vehicle.vehicleNo,
-      vehicle.driver,
-      vehicle.location,
-      `${vehicle.speed} km/h`,
-      vehicle.status,
-    ]),
-  });
-
-  doc.save("Fleet_Report.pdf");
-
-  toast.success("PDF exported successfully");
-};
-  if (loading) {
-
- return (
-    <div className="loading-container">
-       <div className="loader"></div>
-      <p>Loading Vehicles...</p>
-    </div>
-  );
-}
-  return (
-    <div className="fleet-page">
-      <h1>🚚 Fleet Management</h1>
-
-      <div className="fleet-header">
-        <button
-        
-          className="add-btn"
-          onClick={() => {
-            setNewVehicle({
-  _id: "",
-  vehicleNo: "",
-  driver: "",
-  speed: 50,
-  status: "Running",
-  location: "",
-});
-
-            setAddVehicle(true);
-          }}
-        >
-          
-          ➕ Add Vehicle 
-        </button>
-        <button
-  className="export-btn"
-  onClick={exportToExcel}
->
-  📊 Export Excel
-</button>
-<button
-  className="pdf-btn"
-  onClick={exportToPDF}
->
-  📄 Export PDF
-</button>
+  if (loading)
+    return (
+      <div className="loading-container">
+        <div className="loader" />
+        <p>Loading vehicles...</p>
       </div>
-      
-      
-
-      <p className="fleet-subtitle">Monitor and manage all fleet vehicles.</p>
-
-      {/* 👇 Statistics Cards */}
-
-      <div className="fleet-stats">
-        <div className="stat-card">
-          <h3>{totalVehicles}</h3>
-          <p>Total Vehicles</p>
+    );
+  return (
+    <main className="fleet-page">
+      <header className="fleet-header">
+        <div>
+          <h1>Fleet Management</h1>
+          <p className="fleet-subtitle">
+            Manage the persistent vehicle registry.
+          </p>
         </div>
-
+        <button className="add-btn" onClick={openCreate}>
+          Add vehicle
+        </button>
+      </header>
+      <section className="fleet-stats">
         <div className="stat-card">
-          <h3>{runningVehicles}</h3>
+          <h3>{stats.totalVehicles}</h3>
+          <p>Total</p>
+        </div>
+        <div className="stat-card">
+          <h3>{stats.runningVehicles}</h3>
           <p>Running</p>
         </div>
-
         <div className="stat-card">
-          <h3>{stoppedVehicles}</h3>
+          <h3>{stats.stoppedVehicles}</h3>
           <p>Stopped</p>
         </div>
-
         <div className="stat-card">
-          <h3>{averageSpeed} km/h</h3>
-          <p>Average Speed</p>
+          <h3>{stats.averageSpeed} km/h</h3>
+          <p>Average speed</p>
         </div>
-      </div>
-
-      <Charts
-        stats={{
-          totalVehicles,
-          runningVehicles,
-          stoppedVehicles,
-          averageSpeed,
-        }}
-      />
-
-      {/* Search & Filter */}
-
+      </section>
+      <Charts stats={stats} />
       <div className="fleet-toolbar">
         <input
-          type="text"
-          placeholder="Search Vehicle or Driver..."
           className="fleet-search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          value={query}
+          placeholder="Search vehicle, driver, or ID"
+          onChange={(event) => setQuery(event.target.value)}
         />
-
         <select
           className="fleet-filter"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
+          value={status}
+          onChange={(event) => setStatus(event.target.value as "All" | Status)}
         >
-          <option>All</option>
-          <option>Running</option>
-          <option>Stopped</option>
-        </select>
-        <select
-          className="fleet-filter"
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-        >
-          <option value="Default">Sort By</option>
-          <option value="SpeedLow">Speed ↑</option>
-          <option value="SpeedHigh">Speed ↓</option>
-          <option value="NameAZ">Vehicle A-Z</option>
-          <option value="NameZA">Vehicle Z-A</option>
+          <option value="All">All statuses</option>
+          <option value="Running">Running</option>
+          <option value="Stopped">Stopped</option>
         </select>
       </div>
-         
-      {/* Table */}
-
-      <div className="fleet-table-card">
+      <section className="fleet-table-card">
         <table className="fleet-table">
           <thead>
             <tr>
               <th>ID</th>
               <th>Vehicle</th>
               <th>Driver</th>
+              <th>Location</th>
               <th>Speed</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
-
           <tbody>
-            {currentVehicles.map((vehicle) => (
+            {filtered.map((vehicle) => (
               <tr key={vehicle._id}>
-                <td>{vehicle.vehicleNo}</td>
-
-                <td>{vehicle.vehicleNo}</td>
-
+                <td>{vehicle.id}</td>
+                <td>{vehicle.name}</td>
                 <td>{vehicle.driver}</td>
-
-                <td>{vehicle.speed} km/h</td>
-
-               <td>
-  <span
-    className={
-      vehicle.status === "Running"
-        ? "status-badge running"
-        : "status-badge stopped"
-    }
-  >
-    {vehicle.status}
-  </span>
-</td>
                 <td>
-                  <div className="action-buttons">
-                    <button
-                      className="view-btn"
-                      onClick={() => setSelectedVehicle(vehicle)}
-                    >
-                      👁️ View
-                    </button>
-
-                    <button
-                      className="edit-btn"
-                      onClick={() => setEditVehicle({ ...vehicle })}
-                    >
-                      ✏️ Edit
-                    </button>
-
-                    <button
-                      className="delete-btn"
-                      onClick={() => setDeleteVehicle(vehicle)}
-                    >
-                      🗑️ Delete
-                    </button>
-                  </div>
+                  {vehicle.lat.toFixed(4)}, {vehicle.lng.toFixed(4)}
+                </td>
+                <td>{vehicle.speed} km/h</td>
+                <td>
+                  <span
+                    className={`status-badge ${vehicle.status === "Running" ? "running" : "stopped"}`}
+                  >
+                    {vehicle.status}
+                  </span>
+                </td>
+                <td className="action-buttons">
+                  <button
+                    className="edit-btn"
+                    onClick={() => openEdit(vehicle)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="delete-btn"
+                    onClick={() => void remove(vehicle)}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-
-        {filteredVehicles.length === 0 && (
-          <div className="no-data">🚚 No vehicle found.</div>
-        )}
-      </div>
-
-      {/* View Modal */}
-
-      {selectedVehicle && (
-        <div className="modal-overlay" onClick={() => setSelectedVehicle(null)}>
-          <div className="vehicle-modal" onClick={(e) => e.stopPropagation()}>
-            <h2>🚚 Vehicle Details</h2>
-
-            <p>
-              
-  <strong>Vehicle No :</strong> {selectedVehicle.vehicleNo}
-
-            </p>
-
-            <p>
-              <strong>Vehicle :</strong> {selectedVehicle.vehicleNo}
-            </p>
-
-            <p>
-              <strong>Driver :</strong> {selectedVehicle.driver}
-            </p>
-<p>
-  <strong>Location :</strong> {selectedVehicle.location}
-</p>
-            <p>
-              <strong>Speed :</strong> {selectedVehicle.speed} km/h
-            </p>
-
-            <p>
-              <strong>Status :</strong>{" "}
-              <span
-                className={
-                  selectedVehicle.status === "Running" ? "running" : "stopped"
-                }
-              >
-                {selectedVehicle.status}
-              </span>
-            </p>
-
-            <button
-              className="close-btn"
-              onClick={() => setSelectedVehicle(null)}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Modal */}
-
-      {editVehicle && (
-        <div className="modal-overlay" onClick={() => setEditVehicle(null)}>
-          <div className="vehicle-modal" onClick={(e) => e.stopPropagation()}>
-            <h2>✏️ Edit Vehicle</h2>
-
-            <label>Vehicle</label>
-
-            <input
-              type="text"
-              value={editVehicle.vehicleNo}
-              onChange={(e) =>
-                setEditVehicle({
-                  ...editVehicle,
-                  vehicleNo: e.target.value,
-                })
-              }
-            />
-
-            <label>Driver</label>
-
-            <input
-              type="text"
-              value={editVehicle.driver}
-              onChange={(e) =>
-                setEditVehicle({
-                  ...editVehicle,
-                  driver: e.target.value,
-                })
-              }
-            />
-              <label>Location</label>
-
-<input
-  type="text"
-  value={editVehicle.location}
-  onChange={(e) =>
-    setEditVehicle({
-      ...editVehicle,
-      location: e.target.value,
-    })
-  }
-/>
-            <label>Speed</label>
-
-            <input
-              type="number"
-              value={editVehicle.speed}
-              onChange={(e) =>
-                setEditVehicle({
-                  ...editVehicle,
-                  speed: Number(e.target.value),
-                })
-              }
-            />
-
-            <label>Status</label>
-
-            <select
-              value={editVehicle.status}
-              onChange={(e) =>
-                setEditVehicle({
-                  ...editVehicle,
-                  status: e.target.value as "Running" | "Stopped"
-                })
-              }
-            >
-              <option>Running</option>
-              <option>Stopped</option>
-            </select>
-
-            <div className="modal-buttons">
-             <button
-  className="save-btn"
-  onClick={async () => {
-    try {
-      await api.put(`/vehicles/${editVehicle!._id}`, {
-        vehicleNo: editVehicle!.vehicleNo,
-        driver: editVehicle!.driver,
-        location: editVehicle!.location,
-        
-        speed: editVehicle!.speed,
-        status: editVehicle!.status,
-      });
-         toast.success("Vehicle updated successfully");
-      setVehicles((prev) =>
-        prev.map((v) =>
-          v._id === editVehicle!._id ? editVehicle! : v
-        )
-      );
-
-      setEditVehicle(null);
-    } catch (error) {
-      console.error(error);
-    }
-  }}
->
-  💾 Save
-</button>
-
-              <button
-                className="close-btn"
-                onClick={() => setEditVehicle(null)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      <div className="pagination">
-        <button
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+        {!filtered.length && <p className="no-data">No matching vehicles.</p>}
+      </section>
+      {(creating || editing) && (
+        <div
+          className="modal-overlay"
+          onClick={() => {
+            setCreating(false);
+            setEditing(null);
+          }}
         >
-          ◀️ Previous
-        </button>
-
-        <span>
-          Page {currentPage} of {totalPages}
-        </span>
-
-        <button
-          disabled={currentPage === totalPages}
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
-        >
-          Next ▶️
-        </button>
-      </div>
-      {/* Delete Modal */}
-
-      {deleteVehicle && (
-        <div className="modal-overlay" onClick={() => setDeleteVehicle(null)}>
-          <div className="vehicle-modal" onClick={(e) => e.stopPropagation()}>
-            <h2>🗑️ Delete Vehicle</h2>
-
-            <p
-              style={{
-                margin: "20px 0",
-                textAlign: "center",
-                fontSize: "18px",
-              }}
-            >
-              Are you sure you want to delete
-              <br />
-              <strong>{deleteVehicle.vehicleNo}</strong> ?
-            </p>
-
-            <div className="modal-buttons">
-              <button
-                className="close-btn"
-                onClick={() => setDeleteVehicle(null)}
-              >
-                Cancel
-              </button>
-
-              <button
-                className="delete-btn"
-                onClick={async () => {
-  try {
-    await api.delete(`/vehicles/${deleteVehicle._id}`);
-     toast.success("Vehicle deleted successfully");
-    setVehicles((prev) =>
-      prev.filter((v) => v._id !== deleteVehicle._id)
-    );
-
-    setDeleteVehicle(null);
-  } catch (error) {
-    console.error(error);
-  }
-}}
-              >
-                🗑️ Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* Add Vehicle Modal */}
-
-      {addVehicle && (
-        <div className="modal-overlay" onClick={() => setAddVehicle(false)}>
-          <div className="vehicle-modal" onClick={(e) => e.stopPropagation()}>
-             <h2>➕ Add Vehicle</h2>
+          <form
+            className="vehicle-modal"
+            onSubmit={save}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h2>{editing ? "Edit vehicle" : "Add vehicle"}</h2>
             <div className="modal-content">
-  <input
-    type="text"
-    placeholder="Vehicle Number"
-    value={newVehicle.vehicleNo}
-    onChange={(e) =>
-      setNewVehicle({ ...newVehicle, vehicleNo: e.target.value })
-    }
-  />
-
-  <input
-    type="text"
-    placeholder="Driver Name"
-    value={newVehicle.driver}
-    onChange={(e) =>
-      setNewVehicle({ ...newVehicle, driver: e.target.value })
-    }
-  />
-
-  <input
-    type="text"
-    placeholder="Location"
-    value={newVehicle.location}
-    onChange={(e) =>
-      setNewVehicle({ ...newVehicle, location: e.target.value })
-    }
-  />
-
-  <input
-    type="number"
-    placeholder="Speed"
-    value={newVehicle.speed}
-    onChange={(e) =>
-      setNewVehicle({
-        ...newVehicle,
-        speed: Number(e.target.value),
-      })
-    }
-  />
-
-  <select
-    value={newVehicle.status}
-    onChange={(e) =>
-      setNewVehicle({ ...newVehicle, status: e.target.value as "Running" | "Stopped" })
-    }
-  >
-    <option value="Running">Running</option>
-    <option value="Stopped">Stopped</option>
-  </select>
-</div>
-            <div className="modal-buttons">
-              <button
-                className="save-btn"
-                onClick={async () => {
-                   if (
-      !newVehicle.vehicleNo.trim() ||
-      !newVehicle.driver.trim() ||
-      !newVehicle.location.trim()
-    ) {
-      alert("Please fill all required fields.");
-      return;
-    }
-                  try {
-                    const response = await api.post("/vehicles", {
-                      vehicleNo: newVehicle.vehicleNo,
-                      driver: newVehicle.driver,
-                      location: newVehicle.location,
-                      speed: newVehicle.speed,
-                      status: newVehicle.status,
-                    });
-                    toast.success("Vehicle added successfully");
-                    setVehicles((prev) => [...prev, response.data.data]);
-
-                    setCurrentPage(
-                      Math.ceil((vehicles.length + 1) / vehiclesPerPage),
-                    );
-
-                    setNewVehicle({
-                      _id: "",
-                      vehicleNo: "",
-                      driver: "",
-                      location: "",
-                      speed: 50,
-                      status: "Running",
-                    });
-
-                    setAddVehicle(false);
-                  } catch (error) {
-                    console.error(error);
+              {(
+                [
+                  ["id", "Vehicle ID", "number"],
+                  ["name", "Vehicle name", "text"],
+                  ["driver", "Driver", "text"],
+                  ["lat", "Latitude", "number"],
+                  ["lng", "Longitude", "number"],
+                  ["speed", "Speed", "number"],
+                  ["fuel", "Fuel (%)", "number"],
+                  ["battery", "Battery (%)", "number"],
+                ] as const
+              ).map(([key, label, type]) => (
+                <label key={key}>
+                  {label}
+                  <input
+                    type={type}
+                    required
+                    value={draft[key]}
+                    onChange={(event) =>
+                      updateDraft(
+                        key,
+                        type === "number"
+                          ? Number(event.target.value)
+                          : event.target.value,
+                      )
+                    }
+                  />
+                </label>
+              ))}
+              <label>
+                Status
+                <select
+                  value={draft.status}
+                  onChange={(event) =>
+                    updateDraft("status", event.target.value as Status)
                   }
+                >
+                  <option value="Running">Running</option>
+                  <option value="Stopped">Stopped</option>
+                </select>
+              </label>
+            </div>
+            <div className="modal-buttons">
+              <button className="save-btn" type="submit">
+                Save
+              </button>
+              <button
+                className="close-btn"
+                type="button"
+                onClick={() => {
+                  setCreating(false);
+                  setEditing(null);
                 }}
               >
-                💾 Save
-              </button>
-
-              <button
-                className="close-btn"
-                onClick={() => setAddVehicle(false)}
-              >
                 Cancel
               </button>
             </div>
-          </div>
+          </form>
         </div>
       )}
-    </div>
+    </main>
   );
 }
-
 export default Fleet;

@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
 import Navbar from "./components/Navbar/Navbar";
@@ -55,93 +59,110 @@ function App() {
         }}
       />
 
-      <Routes>
+     <Routes>
 
-        <Route
-          path="/login"
-          element={<Login />}
-        />
+  {/* Public Routes */}
+  <Route
+    path="/login"
+    element={<Login />}
+  />
 
-        <Route
-          path="/register"
-          element={<Register />}
-        />
-<Route
-  path="/profile"
-  element={
-    <ProtectedRoute>
-      <Profile />
-    </ProtectedRoute>
-  }
-/>
+  <Route
+    path="/register"
+    element={<Register />}
+  />
 
-<Route
-  path="/settings"
-  element={
-    <ProtectedRoute>
-      <Settings />
-    </ProtectedRoute>
-  }
-/>
+  {/* Protected Dashboard */}
+  <Route
+    path="/dashboard"
+    element={
+      <ProtectedRoute>
 
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
+        <div className="app">
 
-              <div className="app">
+          <Navbar
+            search={search}
+            setSearch={setSearch}
+            theme={theme}
+            setTheme={setTheme}
+          />
 
-                <Navbar
-                  search={search}
-                  setSearch={setSearch}
-                  theme={theme}
-                  setTheme={setTheme}
-                />
+          <div className="content">
 
-                <div className="content">
+            <Sidebar
+              activePage={activePage}
+              setActivePage={setActivePage}
+            />
 
-                  <Sidebar
-                    activePage={activePage}
-                    setActivePage={setActivePage}
-                  />
+            {activePage === "dashboard" && (
+              <Dashboard
+                search={search}
+                liveVehicles={liveVehicles ?? []}
+              />
+            )}
 
-                  {activePage === "dashboard" && (
-                    <Dashboard
-                      search={search}
-                      liveVehicles={
-                        liveVehicles ?? []
-                      }
-                    />
-                  )}
-{activePage === "map" && (
-  <LiveMap />
-)}
-{activePage === "analytics" && (
-  <Analytics />
-)}
-                  {activePage === "fleet" && (
-                    <Fleet />
-                  )}
-                 {activePage === "alerts" && (
-  <Alerts />
-)}
-                </div>
+            {activePage === "map" && (
+              <LiveMap />
+            )}
 
-              </div>
+            {activePage === "analytics" && (
+              <Analytics />
+            )}
 
-            </ProtectedRoute>
-          }
-        />
-<Route
-  path="*"
-  element={<NotFound />}
-/>
-        <Route
-          path="*"
-          element={<Navigate to="/" replace />}
-        />
+            {activePage === "fleet" && (
+              <Fleet />
+            )}
 
-      </Routes>
+            {activePage === "alerts" && (
+              <Alerts />
+            )}
+
+          </div>
+
+        </div>
+
+      </ProtectedRoute>
+    }
+  />
+
+  {/* Profile */}
+  <Route
+    path="/profile"
+    element={
+      <ProtectedRoute>
+        <Profile />
+      </ProtectedRoute>
+    }
+  />
+
+  {/* Settings */}
+  <Route
+    path="/settings"
+    element={
+      <ProtectedRoute>
+        <Settings />
+      </ProtectedRoute>
+    }
+  />
+
+  {/* Root → Dashboard */}
+  <Route
+    path="/"
+    element={
+      <Navigate
+        to="/dashboard"
+        replace
+      />
+    }
+  />
+
+  {/* 404 */}
+  <Route
+    path="*"
+    element={<NotFound />}
+  />
+
+</Routes>
     </>
   );
 }

@@ -1,40 +1,58 @@
-import { useEffect, useState } from "react";
-import api from "../services/api";
+import { useMemo } from "react";
+import { useSocket } from "../context/SocketContext";
 import Charts from "../components/Charts/Charts";
 
 import "./Analytics.css";
 
-interface DashboardStats {
-  totalVehicles: number;
-  runningVehicles: number;
-  stoppedVehicles: number;
-  averageSpeed: number;
-}
-
 function Analytics() {
-  const [stats, setStats] = useState<DashboardStats>({
-    totalVehicles: 0,
-    runningVehicles: 0,
-    stoppedVehicles: 0,
-    averageSpeed: 0,
-  });
+  const { liveVehicles } = useSocket();
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await api.get("/dashboard/stats");
-        setStats(res.data.data);
-      } catch (error) {
-        console.error(error);
-      }
+  const stats = useMemo(() => {
+    const totalVehicles = liveVehicles.length;
+
+    const runningVehicles = liveVehicles.filter(
+      (vehicle) => vehicle.status === "Running"
+    ).length;
+
+    const stoppedVehicles = liveVehicles.filter(
+      (vehicle) => vehicle.status === "Stopped"
+    ).length;
+
+    const averageSpeed =
+      totalVehicles === 0
+        ? 0
+        : Math.round(
+            liveVehicles.reduce(
+              (sum, vehicle) => sum + vehicle.speed,
+              0
+            ) / totalVehicles
+          );
+
+    return {
+      totalVehicles,
+      runningVehicles,
+      stoppedVehicles,
+      averageSpeed,
     };
+  }, [liveVehicles]);
 
-    fetchStats();
+  const runningPercentage =
+    stats.totalVehicles > 0
+      ? Math.round(
+          (stats.runningVehicles /
+            stats.totalVehicles) *
+            100
+        )
+      : 0;
 
-    const interval = setInterval(fetchStats, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
+  const stoppedPercentage =
+    stats.totalVehicles > 0
+      ? Math.round(
+          (stats.stoppedVehicles /
+            stats.totalVehicles) *
+            100
+        )
+      : 0;
 
   return (
     <div className="analytics-page">
@@ -50,22 +68,34 @@ function Analytics() {
       <div className="analytics-cards">
 
         <div className="analytics-card blue">
-          <h3>{stats.totalVehicles}</h3>
+          <h3>
+            {stats.totalVehicles}
+          </h3>
+
           <p>Total Vehicles</p>
         </div>
 
         <div className="analytics-card green">
-          <h3>{stats.runningVehicles}</h3>
+          <h3>
+            {stats.runningVehicles}
+          </h3>
+
           <p>Running</p>
         </div>
 
         <div className="analytics-card red">
-          <h3>{stats.stoppedVehicles}</h3>
+          <h3>
+            {stats.stoppedVehicles}
+          </h3>
+
           <p>Stopped</p>
         </div>
 
         <div className="analytics-card orange">
-          <h3>{stats.averageSpeed} km/h</h3>
+          <h3>
+            {stats.averageSpeed} km/h
+          </h3>
+
           <p>Average Speed</p>
         </div>
 
@@ -79,55 +109,84 @@ function Analytics() {
 
       </div>
 
-      {/* Analytics Cards */}
+      {/* Performance */}
 
       <div className="performance-grid">
 
         <div className="performance-card">
+
           <h2>🚚 Fleet Performance</h2>
 
           <div className="progress-item">
-            <span>Running Vehicles</span>
+
+            <span>
+              Running Vehicles
+            </span>
 
             <progress
               value={stats.runningVehicles}
               max={stats.totalVehicles || 1}
             />
+
+            <strong>
+              {runningPercentage}%
+            </strong>
+
           </div>
 
           <div className="progress-item">
-            <span>Stopped Vehicles</span>
+
+            <span>
+              Stopped Vehicles
+            </span>
 
             <progress
               value={stats.stoppedVehicles}
               max={stats.totalVehicles || 1}
             />
+
+            <strong>
+              {stoppedPercentage}%
+            </strong>
+
           </div>
 
         </div>
 
         <div className="performance-card">
 
-          <h2>📈 Daily Overview</h2>
+          <h2>📈 Live Overview</h2>
 
           <p>
             🚚 Total Fleet :
-            <strong> {stats.totalVehicles}</strong>
+            <strong>
+              {" "}
+              {stats.totalVehicles}
+            </strong>
           </p>
 
           <p>
             🟢 Running :
-            <strong> {stats.runningVehicles}</strong>
+            <strong>
+              {" "}
+              {stats.runningVehicles}
+            </strong>
           </p>
 
           <p>
             🔴 Stopped :
-            <strong> {stats.stoppedVehicles}</strong>
+            <strong>
+              {" "}
+              {stats.stoppedVehicles}
+            </strong>
           </p>
 
           <p>
             ⚡ Avg Speed :
-            <strong> {stats.averageSpeed} km/h</strong>
+            <strong>
+              {" "}
+              {stats.averageSpeed} km/h
+            </strong>
           </p>
 
         </div>
