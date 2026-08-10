@@ -1,195 +1,201 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { FaBell, FaSearch } from "react-icons/fa";
+import { useSocket } from "../context/SocketContext";
 import "./Alerts.css";
 
-interface Alert {
-  id: number;
-  vehicle: string;
-  driver: string;
-  type: string;
-  severity: "Critical" | "Warning" | "Info";
-  time: string;
-  status: "Active" | "Resolved";
+function formatTime(timestamp: string) {
+  const date = new Date(timestamp);
+
+  return Number.isNaN(date.getTime())
+    ? "Unknown"
+    : date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
 }
 
 function Alerts() {
+  const { alerts } = useSocket();
+
   const [search, setSearch] = useState("");
 
-  const [alerts, setAlerts] = useState<Alert[]>([
-    {
-      id: 1,
-      vehicle: "Truck-12",
-      driver: "Rahul",
-      type: "Overspeed",
-      severity: "Critical",
-      time: "10:15 AM",
-      status: "Active",
-    },
-    {
-      id: 2,
-      vehicle: "Truck-18",
-      driver: "Amit",
-      type: "Low Fuel",
-      severity: "Warning",
-      time: "09:45 AM",
-      status: "Active",
-    },
-    {
-      id: 3,
-      vehicle: "Truck-07",
-      driver: "Rakesh",
-      type: "Offline",
-      severity: "Critical",
-      time: "09:05 AM",
-      status: "Resolved",
-    },
-    {
-      id: 4,
-      vehicle: "Truck-25",
-      driver: "Suresh",
-      type: "Geofence",
-      severity: "Info",
-      time: "08:30 AM",
-      status: "Active",
-    },
-  ]);
+  const query = search.trim().toLowerCase();
 
-  const filteredAlerts = alerts.filter(
-    (alert) =>
-      alert.vehicle
-        .toLowerCase()
-        .includes(search.toLowerCase()) ||
-      alert.driver
-        .toLowerCase()
-        .includes(search.toLowerCase()) ||
-      alert.type
-        .toLowerCase()
-        .includes(search.toLowerCase())
+  const filteredAlerts = useMemo(
+    () =>
+      alerts.filter(
+        (alert) =>
+          !query ||
+          [
+            alert.vehicleName,
+            alert.type,
+            alert.message,
+            alert.severity,
+          ].some((value) =>
+            value.toLowerCase().includes(query)
+          )
+      ),
+    [alerts, query]
+  );
+
+  const counts = useMemo(
+    () => ({
+      high: alerts.filter(
+        (alert) => alert.severity === "HIGH"
+      ).length,
+
+      medium: alerts.filter(
+        (alert) => alert.severity === "MEDIUM"
+      ).length,
+
+      total: alerts.length,
+    }),
+    [alerts]
   );
 
   return (
-    <div className="alerts-page">
+    <main className="alerts-page">
 
-      <div className="alerts-header">
-        <h1>🚨 Fleet Alerts</h1>
+      <header className="alerts-header">
 
-        <input
-          type="text"
-          placeholder="Search alerts..."
-          value={search}
-          onChange={(e) =>
-            setSearch(e.target.value)
-          }
-        />
-      </div>
+        <div>
+          <span className="alerts-eyebrow">
+            <FaBell /> Live monitoring
+          </span>
 
-      {/* Summary Cards */}
+          <h1>Fleet Alerts</h1>
 
-      <div className="alerts-cards">
-
-        <div className="alert-card critical">
-          <h3>Critical</h3>
-          <h2>
-            {
-              alerts.filter(
-                (a) =>
-                  a.severity === "Critical"
-              ).length
-            }
-          </h2>
+          <p>
+            Active alerts from the real-time
+            telemetry stream.
+          </p>
         </div>
 
-        <div className="alert-card warning">
-          <h3>Warning</h3>
-          <h2>
-            {
-              alerts.filter(
-                (a) =>
-                  a.severity === "Warning"
-              ).length
+        <div className="alerts-search">
+          <FaSearch />
+
+          <input
+            type="search"
+            value={search}
+            placeholder="Search vehicle or alert..."
+            onChange={(event) =>
+              setSearch(event.target.value)
             }
-          </h2>
+          />
         </div>
 
-        <div className="alert-card info">
-          <h3>Info</h3>
-          <h2>
-            {
-              alerts.filter(
-                (a) =>
-                  a.severity === "Info"
-              ).length
-            }
-          </h2>
-        </div>
+      </header>
 
-        <div className="alert-card active">
-          <h3>Active</h3>
-          <h2>
-            {
-              alerts.filter(
-                (a) =>
-                  a.status === "Active"
-              ).length
-            }
-          </h2>
-        </div>
+      <section
+        className="alerts-cards"
+        aria-label="Alert summary"
+      >
 
-      </div>
+        <article className="alert-card critical">
+          <h2>{counts.high}</h2>
+          <p>High priority</p>
+        </article>
 
-      {/* Table */}
+        <article className="alert-card warning">
+          <h2>{counts.medium}</h2>
+          <p>Medium priority</p>
+        </article>
 
-      <div className="alerts-table">
+        <article className="alert-card info">
+          <h2>{counts.total}</h2>
+          <p>Active alerts</p>
+        </article>
 
-        <table>
+      </section>
 
-          <thead>
+      <section
+        className="alerts-table"
+        aria-label="Active alerts"
+      >
 
-            <tr>
-              <th>Vehicle</th>
-              <th>Driver</th>
-              <th>Alert</th>
-              <th>Severity</th>
-              <th>Time</th>
-              <th>Status</th>
-            </tr>
+        {filteredAlerts.length === 0 ? (
 
-          </thead>
+          <p className="alerts-empty">
+            {alerts.length
+              ? "No alerts match your search."
+              : "No active fleet alerts."}
+          </p>
 
-          <tbody>
+        ) : (
 
-            {filteredAlerts.map((alert) => (
+          <table>
 
-              <tr key={alert.id}>
-
-                <td>{alert.vehicle}</td>
-
-                <td>{alert.driver}</td>
-
-                <td>{alert.type}</td>
-
-                <td>
-                  <span
-                    className={`badge ${alert.severity.toLowerCase()}`}
-                  >
-                    {alert.severity}
-                  </span>
-                </td>
-
-                <td>{alert.time}</td>
-
-                <td>{alert.status}</td>
-
+            <thead>
+              <tr>
+                <th>Vehicle</th>
+                <th>Alert</th>
+                <th>Severity</th>
+                <th>Time</th>
+                <th>Status</th>
               </tr>
+            </thead>
 
-            ))}
+            <tbody>
 
-          </tbody>
+              {filteredAlerts.map((alert) => (
 
-        </table>
+                <tr key={alert.id}>
 
-      </div>
+                  <td>
+                    <strong>
+                      {alert.vehicleName}
+                    </strong>
 
-    </div>
+                    <small>
+                      ID: {alert.vehicleId}
+                    </small>
+                  </td>
+
+                  <td>
+                    <strong>
+                      {alert.type.replace(/_/g, " ")}
+                    </strong>
+
+                    <small>
+                      {alert.message}
+                    </small>
+                  </td>
+
+                  <td>
+                    <span
+                      className={`badge ${
+                        alert.severity === "HIGH"
+                          ? "critical"
+                          : "warning"
+                      }`}
+                    >
+                      {alert.severity}
+                    </span>
+                  </td>
+
+                  <td>
+                    {formatTime(alert.timestamp)}
+                  </td>
+
+                  <td>
+                    <span className="status-active">
+                      Active
+                    </span>
+                  </td>
+
+                </tr>
+
+              ))}
+
+            </tbody>
+
+          </table>
+
+        )}
+
+      </section>
+
+    </main>
   );
 }
 
