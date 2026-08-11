@@ -58,23 +58,63 @@ export const getVehicle = async (
 };
 
 // CREATE
+// CREATE
+// CREATE VEHICLE
 export const addVehicle = async (
   req: Request,
   res: Response
 ) => {
   try {
-    const vehicle = await Vehicle.create(req.body);
+    console.log("🚛 ADD VEHICLE REQUEST:");
+    console.log(req.body);
+
+    // Find the highest existing vehicle ID
+    const lastVehicle = await Vehicle.findOne()
+      .sort({ id: -1 })
+      .select("id");
+
+    const nextId = lastVehicle
+      ? lastVehicle.id + 1
+      : 1;
+
+    const vehicle = await Vehicle.create({
+      id: nextId,
+
+      name: req.body.name,
+      driver: req.body.driver,
+
+      lat: Number(req.body.lat) || 18.5204,
+      lng: Number(req.body.lng) || 73.8567,
+
+      speed: Number(req.body.speed) || 0,
+
+      status:
+        req.body.status === "Running"
+          ? "Running"
+          : "Stopped",
+
+      fuel: Number(req.body.fuel) || 100,
+      battery: Number(req.body.battery) || 100,
+
+      route: [],
+    });
+
+    console.log("✅ VEHICLE CREATED:", vehicle);
 
     res.status(201).json({
       success: true,
+      message: "Vehicle created successfully",
       data: vehicle,
     });
-  } catch (err) {
+
+  } catch (err: any) {
+    console.error("❌ ADD VEHICLE ERROR:");
     console.error(err);
 
     res.status(500).json({
       success: false,
-      message: "Failed to create vehicle",
+      message:
+        err?.message || "Failed to create vehicle",
     });
   }
 };

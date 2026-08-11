@@ -1,3 +1,7 @@
+:root {
+  --font-primary: "Inter", sans-serif;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -5,6 +9,6 @@
 }
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-primary);
   background: #f4f7fc;
 }

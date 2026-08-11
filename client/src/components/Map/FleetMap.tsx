@@ -32,22 +32,44 @@ const RUNNING_ICON = truckIcon("running");
 const STOPPED_ICON = truckIcon("stopped");
 const SELECTED_ICON = truckIcon("selected");
 
+function MapResizeHandler() {
+  const map = useMap();
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [map]);
+
+  return null;
+}
+
 function FocusSelectedVehicle({
   selectedVehicle,
 }: {
   selectedVehicle: Vehicle | null;
 }) {
   const map = useMap();
+
   const lastFocusedId = useRef<number | null | undefined>(undefined);
 
   useEffect(() => {
     const selectedId = selectedVehicle?.id ?? null;
-    if (lastFocusedId.current === selectedId) return;
+
+    if (lastFocusedId.current === selectedId) {
+      return;
+    }
+
     lastFocusedId.current = selectedId;
 
     const position: LatLngExpression = selectedVehicle
       ? [selectedVehicle.lat, selectedVehicle.lng]
       : DEFAULT_POSITION;
+
     map.flyTo(position, selectedVehicle ? 15 : 11, {
       duration: 0.8,
       easeLinearity: 0.35,
@@ -101,17 +123,35 @@ function FleetMap({
 
 
   return (
-    <MapContainer
-      center={DEFAULT_POSITION}
-      zoom={11}
-      zoomControl={false}
-      style={{ width: "100%", height: "100%" }}
-      aria-label="Live fleet map"
-    >
-      <FocusSelectedVehicle selectedVehicle={selectedVehicle} />
-      <FitSelectedRoute selectedVehicle={selectedVehicle} />
-      <ZoomControl position="bottomright" />
-      <TileLayer attribution={tileAttribution} url={tileUrl} />
+  <MapContainer
+  center={DEFAULT_POSITION}
+  zoom={11}
+  zoomControl={false}
+  style={{
+    width: "100%",
+    height: "500px",
+    minHeight: "500px",
+  }}
+  aria-label="Live fleet map"
+>
+  <MapResizeHandler />
+
+  <FocusSelectedVehicle
+    selectedVehicle={selectedVehicle}
+  />
+
+  <FitSelectedRoute
+    selectedVehicle={selectedVehicle}
+  />
+
+  <ZoomControl position="bottomright" />
+
+  <TileLayer
+    attribution={tileAttribution}
+    url={tileUrl}
+  />
+
+  
 
       {selectedVehicle?.route && selectedVehicle.route.length > 1 && (
         <Polyline

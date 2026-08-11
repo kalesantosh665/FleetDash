@@ -19,7 +19,11 @@ function VehicleDetails({ vehicle }: Props) {
         <div className="empty-state">
           <div className="empty-icon">🚚</div>
 
-          <p>Select a vehicle from the map.</p>
+          <p>Select a vehicle from the map.
+             <br />
+  to view live telemetry and route details.
+</p>
+          
         </div>
       </div>
     );

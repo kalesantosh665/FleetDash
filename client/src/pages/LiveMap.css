@@ -8,6 +8,7 @@
   min-height: 100%;
 }
 
+
 /* ==========================================
    Header
 ========================================== */
@@ -22,6 +23,7 @@
 }
 
 .live-map-header h1 {
+  margin: 0;
   font-size: 42px;
   font-weight: 700;
   color: #1e293b;
@@ -33,8 +35,9 @@
   font-size: 15px;
 }
 
+
 /* ==========================================
-   Stats Toolbar
+   Stats
 ========================================== */
 
 .map-stats {
@@ -45,90 +48,252 @@
 
 .stat-box {
   min-width: 140px;
-  background: white;
+
+  background: #ffffff;
+
   border-radius: 14px;
+
   padding: 14px 18px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.08);
 
   display: flex;
   justify-content: space-between;
   align-items: center;
 
+  gap: 15px;
+
   font-weight: 600;
   color: #475569;
 
-  transition: .25s;
+  transition: 0.25s ease;
 }
 
 .stat-box:hover {
   transform: translateY(-4px);
 }
 
-.stat-box span {
+.stat-label {
+  white-space: nowrap;
+}
+
+.stat-value {
   font-size: 24px;
-  font-weight: bold;
+  font-weight: 700;
   color: #2563eb;
 }
 
+.stat-value.running {
+  color: #16a34a;
+}
+
+.stat-value.stopped {
+  color: #ef4444;
+}
+
+
 /* ==========================================
-   Layout
+   Content
 ========================================== */
 
-.live-map-content{
-    width:100%;
+.live-map-content {
+  width: 100%;
 }
+
+
+/* ==========================================
+   Map Panel
+========================================== */
+
+.map-panel {
+  position: relative;
+
+  width: 100%;
+
+  height: 80vh;
+
+  overflow: hidden;
+
+  border-radius: 18px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.08);
+
+  border: 1px solid #e5e7eb;
+}
+
+
+/* ==========================================
+   Fleet Map
+========================================== */
+
+.map-panel > *:first-child {
+  width: 100%;
+  height: 100%;
+}
+
+
+/* ==========================================
+   Vehicle Details
+========================================== */
+
+
+/* ==========================================
+   Live Map Page
+========================================== */
+
+.live-map-page {
+  padding: 25px;
+  background: #f8fafc;
+  min-height: 100%;
+}
+
+
+/* ==========================================
+   Header
+========================================== */
+
+.live-map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 25px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.live-map-header h1 {
+  margin: 0;
+  font-size: 42px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.live-map-header p {
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 15px;
+}
+
+
+/* ==========================================
+   Stats
+========================================== */
+
+.map-stats {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.stat-box {
+  min-width: 140px;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 14px 18px;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.08);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 15px;
+
+  font-weight: 600;
+  color: #475569;
+}
+
+.stat-label {
+  white-space: nowrap;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.stat-value.running {
+  color: #16a34a;
+}
+
+.stat-value.stopped {
+  color: #ef4444;
+}
+
+
+/* ==========================================
+   MAP + DETAILS
+========================================== */
+
+.live-map-content {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 2fr)
+    minmax(300px, 1fr);
+
+  gap: 24px;
+
+  align-items: start;
+}
+
 
 /* ==========================================
    Map
 ========================================== */
 
-.map-panel{
+.map-panel {
+  position: relative;
 
-    position:relative;
+  width: 100%;
 
-    width:100%;
+  height: 80vh;
 
-    height:80vh;
+  min-height: 520px;
 
-    overflow:hidden;
+  overflow: hidden;
 
-    border-radius:18px;
+  border-radius: 18px;
 
-    background:#fff;
+  background: #ffffff;
 
-    box-shadow:0 12px 30px rgba(0,0,0,.08);
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.08);
 
-    border:1px solid #e5e7eb;
-
+  border: 1px solid #e5e7eb;
 }
+
+.map-panel .leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+}
+
 
 /* ==========================================
    Vehicle Details
 ========================================== */
-.floating-details{
 
-    position:absolute;
+.vehicle-details-wrapper {
+  width: 100%;
 
-    top:20px;
+  min-width: 0;
 
-    right:20px;
+  position: sticky;
 
-    width:320px;
+  top: 90px;
 
-    z-index:1000;
-
+  align-self: start;
 }
 
-/* Nice Scrollbar */
-
-.details-panel::-webkit-scrollbar {
-  width: 7px;
-}
-
-.details-panel::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 20px;
-}
 
 /* ==========================================
    Dark Mode
@@ -139,7 +304,7 @@ body.dark .live-map-page {
 }
 
 body.dark .live-map-header h1 {
-  color: white;
+  color: #ffffff;
 }
 
 body.dark .live-map-header p {
@@ -147,123 +312,210 @@ body.dark .live-map-header p {
 }
 
 body.dark .stat-box {
-
   background: #1e293b;
-
-  color: white;
+  color: #ffffff;
 }
 
-body.dark .stat-box span {
+body.dark .stat-value {
   color: #60a5fa;
 }
 
+body.dark .stat-value.running {
+  color: #4ade80;
+}
+
+body.dark .stat-value.stopped {
+  color: #f87171;
+}
+
 body.dark .map-panel {
-
   background: #1e293b;
-
   border-color: #334155;
 }
+
 
 /* ==========================================
    Tablet
 ========================================== */
 
-@media (max-width:1100px){
+@media (max-width: 1100px) {
 
-.live-map-content{
+  .live-map-content {
+    grid-template-columns: 1fr;
+  }
 
-grid-template-columns:1fr;
+  .map-panel {
+    height: 65vh;
+    min-height: 450px;
+  }
 
-}
-
-.map-panel{
-
-height:65vh;
-
-}
-
-.details-panel{
-
-width:100%;
-
-min-width:100%;
-
-max-width:100%;
-
-height:auto;
+  .vehicle-details-wrapper {
+    position: relative;
+    top: auto;
+  }
 
 }
 
-}
 
 /* ==========================================
    Mobile
 ========================================== */
 
-@media (max-width:768px){
+@media (max-width: 768px) {
 
-.live-map-page{
+  .live-map-page {
+    padding: 15px;
+  }
 
-padding:15px;
+  .live-map-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-}
+  .live-map-header h1 {
+    font-size: 30px;
+  }
 
-.live-map-header{
+  .map-stats {
+    width: 100%;
+  }
 
-flex-direction:column;
+  .stat-box {
+    flex: 1;
+    min-width: 110px;
+  }
 
-align-items:flex-start;
-
-}
-
-.live-map-header h1{
-
-font-size:30px;
-
-}
-
-.map-stats{
-
-width:100%;
-
-}
-
-.stat-box{
-
-flex:1;
-
-min-width:110px;
+  .map-panel {
+    height: 55vh;
+    min-height: 400px;
+  }
 
 }
 
-.map-panel{
+/* ==========================================
+   Details Scrollbar
+========================================== */
 
-height:55vh;
+.details-panel::-webkit-scrollbar {
+  width: 7px;
+}
+
+.details-panel::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 20px;
+}
+
+
+/* ==========================================
+   Dark Mode
+========================================== */
+
+body.dark .live-map-page {
+  background: #0f172a;
+}
+
+body.dark .live-map-header h1 {
+  color: #ffffff;
+}
+
+body.dark .live-map-header p {
+  color: #cbd5e1;
+}
+
+body.dark .stat-box {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+body.dark .stat-value {
+  color: #60a5fa;
+}
+
+body.dark .stat-value.running {
+  color: #4ade80;
+}
+
+body.dark .stat-value.stopped {
+  color: #f87171;
+}
+
+body.dark .map-panel {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+
+/* ==========================================
+   Tablet
+========================================== */
+
+@media (max-width: 1100px) {
+
+  .map-panel {
+    height: 65vh;
+  }
+
+  .floating-details {
+    width: 300px;
+  }
 
 }
 
+
+/* ==========================================
+   Mobile
+========================================== */
+
+@media (max-width: 768px) {
+
+  .live-map-page {
+    padding: 15px;
+  }
+
+  .live-map-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .live-map-header h1 {
+    font-size: 30px;
+  }
+
+  .map-stats {
+    width: 100%;
+  }
+
+  .stat-box {
+    flex: 1;
+    min-width: 110px;
+  }
+
+  .map-panel {
+    height: 60vh;
+  }
+
+  
+
 }
 
-@media(max-width:992px){
 
-.floating-details{
+/* ==========================================
+   Small Mobile
+========================================== */
 
-position:relative;
+@media (max-width: 480px) {
 
-top:auto;
+  .map-stats {
+    flex-direction: column;
+    width: 100%;
+  }
 
-right:auto;
+  .stat-box {
+    width: 100%;
+  }
 
-width:100%;
-
-margin-top:15px;
-
-}
-
-.map-panel{
-
-height:60vh;
-
-}
+  .map-panel {
+    height: 55vh;
+  }
 
 }

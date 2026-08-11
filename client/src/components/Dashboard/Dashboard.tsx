@@ -192,7 +192,7 @@ function Dashboard({ search, liveVehicles }: DashboardProps) {
 
       <section className="dashboard-primary">
         <motion.section
-          className="dashboard-panel map-panel"
+          className="dashboard-panel"
           initial={{ opacity: 0, x: -24 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.45, delay: 0.25 }}
@@ -211,7 +211,7 @@ function Dashboard({ search, liveVehicles }: DashboardProps) {
               Live
             </span>
           </header>
-          <div className="map-placeholder">
+          <div className="dashboard-map-container">
             <FleetMap
               vehicles={liveVehicles}
               selectedVehicle={selectedVehicle}

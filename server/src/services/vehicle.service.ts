@@ -31,6 +31,7 @@ export interface Vehicle {
 let vehicles: Vehicle[] = [];
 
 export function createVehicles() {
+  
   vehicles = Array.from({ length: 50 }, (_, index) => ({
     id: index + 1,
     name: `Truck-${index + 1}`,
@@ -42,11 +43,21 @@ export function createVehicles() {
     dLat: (Math.random() - 0.5) * 0.001,
     dLng: (Math.random() - 0.5) * 0.001,
 
-    speed: Math.floor(Math.random() * 40) + 40,
+    speed:
+  index < 3
+    ? Math.floor(Math.random() * 11) + 90
+    : Math.floor(Math.random() * 31) + 50,
     status: "Running",
 
-    fuel: Math.floor(Math.random() * 60) + 40,
-battery: Math.floor(Math.random() * 40) + 60,
+   fuel:
+  index === 3
+    ? 15
+    : Math.floor(Math.random() * 60) + 40,
+
+battery:
+  index === 4
+    ? 15
+    : Math.floor(Math.random() * 40) + 60,
     route: [],
 
     x: 0,
@@ -57,6 +68,52 @@ battery: Math.floor(Math.random() * 40) + 60,
 
   return vehicles;
 }
+export async function addLiveVehicle(
+  vehicle: Vehicle,
+) {
+  vehicles.push(vehicle);
+
+  await publisher.set(
+    "fleet:vehicles",
+    JSON.stringify(vehicles),
+  );
+
+  await publisher.publish(
+    "fleet-updates",
+    JSON.stringify(vehicles),
+  );
+
+  return vehicle;
+}
+
+export async function deleteLiveVehicle(
+  id: number,
+) {
+  const index = vehicles.findIndex(
+    (vehicle) => vehicle.id === id,
+  );
+
+  if (index === -1) {
+    return null;
+  }
+
+  const [deletedVehicle] =
+    vehicles.splice(index, 1);
+
+  await publisher.set(
+    "fleet:vehicles",
+    JSON.stringify(vehicles),
+  );
+
+  await publisher.publish(
+    "fleet-updates",
+    JSON.stringify(vehicles),
+  );
+
+  return deletedVehicle;
+}
+
+
 
 export async function moveVehicles() {
   for (const vehicle of vehicles) {
@@ -114,44 +171,80 @@ if (vehicle.route.length > 30) {
 if (vehicle.status === "Running") {
   // Very slow realistic consumption
   vehicle.fuel = Math.max(
-    0,
+    10,
     vehicle.fuel - Math.random() * 0.03
   );
 
   vehicle.battery = Math.max(
-    0,
+    10,
     vehicle.battery - Math.random() * 0.01
   );
 }
-    // ======================
-    // Overspeed Alert
-    // ======================
+   
+// ======================
+// Fleet Alerts
+// ======================
 
-    if (vehicle.speed > 90) {
-      const alert: Alert = {
-        id: Date.now().toString(),
+// Overspeed
+if (vehicle.speed > 90) {
+  const alert: Alert = {
+    id: `${vehicle.id}-overspeed`,
+    vehicleId: vehicle.id,
+    vehicleName: vehicle.name,
+    type: "OVERSPEED",
+    severity: "HIGH",
+    message: `${vehicle.name} Overspeed (${vehicle.speed} km/h)`,
+    timestamp: new Date().toISOString(),
+  };
 
-        vehicleId: vehicle.id,
-        vehicleName: vehicle.name,
+  await createAlert(alert);
+} else {
+  await clearAlert(
+    "OVERSPEED",
+    vehicle.id,
+  );
+}
 
-        type: "OVERSPEED",
+// Low Fuel
+if (vehicle.fuel < 20) {
+  const alert: Alert = {
+    id: `${vehicle.id}-low-fuel`,
+    vehicleId: vehicle.id,
+    vehicleName: vehicle.name,
+    type: "LOW_FUEL",
+    severity: "MEDIUM",
+    message: `${vehicle.name} Low Fuel (${vehicle.fuel.toFixed(1)}%)`,
+    timestamp: new Date().toISOString(),
+  };
 
-        severity: "HIGH",
+  await createAlert(alert);
+} else {
+  await clearAlert(
+    "LOW_FUEL",
+    vehicle.id,
+  );
+}
 
-        message: `${vehicle.name} Overspeed (${vehicle.speed} km/h)`,
+// Low Battery
+if (vehicle.battery < 20) {
+  const alert: Alert = {
+    id: `${vehicle.id}-low-battery`,
+    vehicleId: vehicle.id,
+    vehicleName: vehicle.name,
+    type: "LOW_BATTERY",
+    severity: "MEDIUM",
+    message: `${vehicle.name} Low Battery (${vehicle.battery.toFixed(1)}%)`,
+    timestamp: new Date().toISOString(),
+  };
 
-        timestamp: new Date().toISOString(),
-      };
-
-      await createAlert(alert);
-    } else {
-      await clearAlert(
-        "OVERSPEED",
-        vehicle.id
-      );
-    }
+  await createAlert(alert);
+} else {
+  await clearAlert(
+    "LOW_BATTERY",
+    vehicle.id,
+  );
+}
   }
-
   await publisher.set(
     "fleet:vehicles",
     JSON.stringify(vehicles)
@@ -164,3 +257,4 @@ if (vehicle.status === "Running") {
 
   return vehicles;
 }
+

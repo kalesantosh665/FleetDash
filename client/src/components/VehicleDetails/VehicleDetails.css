@@ -181,7 +181,17 @@ body.dark .speed-value{
   padding-bottom:12px;
   border-bottom:1px solid #E5E7EB;
 }
-
+.empty-state p {
+  margin: 0;
+  max-width: 260px;
+  text-align: center;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+body.dark .empty-state p {
+  color: #cbd5e1;
+}
 .info-row span{
   color:#64748B;
 }
