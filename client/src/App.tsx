@@ -1,31 +1,32 @@
 import { useEffect, useState } from "react";
 import {
-  Routes,
-  Route,
   Navigate,
+  Route,
+  Routes,
 } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
-import Navbar from "./components/Navbar/Navbar";
-import Sidebar from "./components/Sidebar/Sidebar";
+import Layout from "./components/Layout/Layout";
 import Dashboard from "./components/Dashboard/Dashboard";
 import Fleet from "./components/Fleet/Fleet";
+
 import LiveMap from "./pages/LiveMap";
+import Analytics from "./pages/Analytics";
+import Alerts from "./pages/Alerts";
+
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import ProtectedRoute from "./pages/ProtectedRoute";
-import Alerts from "./pages/Alerts";
-import { useSocket } from "./context/SocketContext";
-import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
+
+import { useSocket } from "./context/SocketContext";
+
 import "./App.css";
 
 function App() {
   const [search, setSearch] = useState("");
-  const [activePage, setActivePage] =
-    useState("dashboard");
 
   const { liveVehicles } = useSocket();
 
@@ -37,7 +38,9 @@ function App() {
   });
 
   useEffect(() => {
-    document.documentElement.dataset.theme = theme;
+    document.documentElement.dataset.theme =
+      theme;
+
     if (theme === "dark") {
       document.body.classList.add("dark");
     } else {
@@ -59,110 +62,117 @@ function App() {
         }}
       />
 
-     <Routes>
+      <Routes>
+        {/* ==========================================
+            PUBLIC ROUTES
+        ========================================== */}
 
-  {/* Public Routes */}
-  <Route
-    path="/login"
-    element={<Login />}
-  />
+        <Route
+          path="/login"
+          element={<Login />}
+        />
 
-  <Route
-    path="/register"
-    element={<Register />}
-  />
+        <Route
+          path="/register"
+          element={<Register />}
+        />
 
-  {/* Protected Dashboard */}
-  <Route
-    path="/dashboard"
-    element={
-      <ProtectedRoute>
+        {/* ==========================================
+            PROTECTED APPLICATION
+        ========================================== */}
 
-        <div className="app">
+        <Route
+          element={
+            <ProtectedRoute>
+              <Layout
+                search={search}
+                setSearch={setSearch}
+                theme={theme}
+                setTheme={setTheme}
+              />
+            </ProtectedRoute>
+          }
+        >
+          {/* Dashboard */}
 
-          <Navbar
-            search={search}
-            setSearch={setSearch}
-            theme={theme}
-            setTheme={setTheme}
-          />
-
-          <div className="content">
-
-            <Sidebar
-              activePage={activePage}
-              setActivePage={setActivePage}
-            />
-
-            {activePage === "dashboard" && (
+          <Route
+            path="/dashboard"
+            element={
               <Dashboard
                 search={search}
-                liveVehicles={liveVehicles ?? []}
+                liveVehicles={
+                  liveVehicles ?? []
+                }
               />
-            )}
+            }
+          />
 
-            {activePage === "map" && (
-              <LiveMap />
-            )}
+          {/* Fleet */}
 
-            {activePage === "analytics" && (
-              <Analytics />
-            )}
+          <Route
+            path="/fleet"
+            element={<Fleet />}
+          />
 
-            {activePage === "fleet" && (
-              <Fleet />
-            )}
+          {/* Live Map */}
 
-            {activePage === "alerts" && (
-              <Alerts />
-            )}
+          <Route
+            path="/map"
+            element={<LiveMap />}
+          />
 
-          </div>
+          {/* Analytics */}
 
-        </div>
+          <Route
+            path="/analytics"
+            element={<Analytics />}
+          />
 
-      </ProtectedRoute>
-    }
-  />
+          {/* Alerts */}
 
-  {/* Profile */}
-  <Route
-    path="/profile"
-    element={
-      <ProtectedRoute>
-        <Profile />
-      </ProtectedRoute>
-    }
-  />
+          <Route
+            path="/alerts"
+            element={<Alerts />}
+          />
 
-  {/* Settings */}
-  <Route
-    path="/settings"
-    element={
-      <ProtectedRoute>
-        <Settings />
-      </ProtectedRoute>
-    }
-  />
+          {/* Profile */}
 
-  {/* Root → Dashboard */}
-  <Route
-    path="/"
-    element={
-      <Navigate
-        to="/dashboard"
-        replace
-      />
-    }
-  />
+          <Route
+            path="/profile"
+            element={<Profile />}
+          />
 
-  {/* 404 */}
-  <Route
-    path="*"
-    element={<NotFound />}
-  />
+          {/* Settings */}
 
-</Routes>
+          <Route
+            path="/settings"
+            element={<Settings />}
+          />
+        </Route>
+
+        {/* ==========================================
+            ROOT
+        ========================================== */}
+
+        <Route
+          path="/"
+          element={
+            <Navigate
+              to="/dashboard"
+              replace
+            />
+          }
+        />
+
+        {/* ==========================================
+            404
+        ========================================== */}
+
+        <Route
+          path="*"
+          element={<NotFound />}
+        />
+      </Routes>
     </>
   );
 }
