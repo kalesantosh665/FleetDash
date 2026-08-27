@@ -5,21 +5,26 @@ A full-stack fleet management dashboard for monitoring vehicles, managing fleet 
 
 FleetDash is built with the MERN stack and provides a centralized dashboard for vehicle management, live map visualization, analytics, alerts, and reporting.
 
+---
+
 ## 🚀 Features
 
 ### 📊 Dashboard
+
 - Fleet overview and vehicle statistics
 - Interactive analytics and charts
 - Vehicle status monitoring
 - Responsive dashboard layout
 
 ### 🗺️ Live Fleet Map
+
 - Interactive vehicle map using Leaflet
 - Vehicle location visualization
 - Vehicle status indicators
 - Real-time map updates
 
 ### 🚘 Vehicle Management
+
 - Add new vehicles
 - Edit vehicle information
 - Delete vehicles
@@ -27,27 +32,32 @@ FleetDash is built with the MERN stack and provides a centralized dashboard for 
 - Vehicle status management
 
 ### 🔔 Alerts & Monitoring
+
 - Vehicle monitoring
 - Overspeed and low-fuel alert handling
 - Real-time alert updates
 - Alert status visualization
 
 ### 🔐 Authentication
+
 - JWT-based authentication
 - Protected application routes
 - Secure API access
 
 ### 📈 Analytics
+
 - Fleet performance visualization
 - Vehicle-related statistics
 - Interactive charts using Recharts
 
 ### 📄 Reports
+
 - Export fleet information to PDF
 - Export data to Excel
 - Generate reports from dashboard data
 
 ### 🎨 UI / UX
+
 - Responsive design
 - Dark mode
 - Clean dashboard interface
@@ -96,18 +106,20 @@ FleetDash is built with the MERN stack and provides a centralized dashboard for 
 FleetDash/
 │
 ├── client/
-│   ├── src/
-│   ├── components/
-│   ├── pages/
-│   ├── services/
-│   └── ...
 │
 ├── server/
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   ├── services/
-│   └── ...
+│
+├── screenshots/
+│   ├── dashboard.png
+│   ├── livemap.png
+│   ├── fleetmangement.png
+│   ├── Fleet.png
+│   ├── Analytics.png
+│   ├── Alrts.png
+│   ├── driver.png
+│   ├── trips.png
+│   ├── loginpage.png
+│   └── dark-mode.png
 │
 └── README.md
 ````
@@ -125,22 +137,21 @@ Make sure the following are installed:
 * MongoDB
 * Redis
 
-### 1. Clone the repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/kalesantosh665/FleetDash.git
-
 cd FleetDash
 ```
 
-### 2. Install frontend dependencies
+### 2. Install Frontend Dependencies
 
 ```bash
 cd client
 npm install
 ```
 
-### 3. Install backend dependencies
+### 3. Install Backend Dependencies
 
 Open another terminal:
 
@@ -149,7 +160,7 @@ cd server
 npm install
 ```
 
-### 4. Configure environment variables
+### 4. Configure Environment Variables
 
 Create a `.env` file inside the `server` directory.
 
@@ -162,51 +173,60 @@ JWT_SECRET=your_jwt_secret
 REDIS_URL=your_redis_connection_string
 ```
 
-> Do not commit real credentials or secrets to GitHub.
+> Never commit real credentials, API keys, or secrets to GitHub.
 
-### 5. Start the backend
+### 5. Start the Backend
 
 ```bash
 cd server
 npm run dev
 ```
 
-### 6. Start the frontend
+### 6. Start the Frontend
+
+Open another terminal:
 
 ```bash
 cd client
 npm run dev
 ```
 
-The application will then be available through the local development URL shown by Vite.
+The frontend will be available at the local development URL provided by Vite.
 
 ---
 
 ## 🔄 Application Architecture
 
 ```text
-                   ┌─────────────────────┐
-                   │      React Client    │
-                   │                     │
-                   │ Dashboard / Map /   │
-                   │ Charts / CRUD / UI  │
-                   └──────────┬──────────┘
-                              │
-                    REST API / Socket.io
-                              │
-                              ▼
-                   ┌─────────────────────┐
-                   │    Node.js Server   │
-                   │     Express.js      │
-                   └───────┬─────┬───────┘
-                           │     │
-                ┌──────────┘     └──────────┐
-                ▼                           ▼
-        ┌───────────────┐          ┌───────────────┐
-        │    MongoDB    │          │     Redis     │
-        │ Persistent DB │          │ Real-time     │
-        │               │          │ Messaging     │
-        └───────────────┘          └───────────────┘
+                    ┌─────────────────────────┐
+                    │       React Client      │
+                    │                         │
+                    │ Dashboard               │
+                    │ Fleet Management        │
+                    │ Live Map                │
+                    │ Analytics               │
+                    │ Alerts                  │
+                    └────────────┬────────────┘
+                                 │
+                         REST API / Socket.io
+                                 │
+                                 ▼
+                    ┌─────────────────────────┐
+                    │      Node.js Server     │
+                    │        Express.js       │
+                    │                         │
+                    │ Routes / Controllers    │
+                    │ Services / Middleware   │
+                    └──────────┬──────┬───────┘
+                               │      │
+                         ┌─────┘      └─────┐
+                         ▼                  ▼
+                 ┌──────────────┐   ┌──────────────┐
+                 │    MongoDB   │   │    Redis     │
+                 │              │   │              │
+                 │ Persistent   │   │ Real-Time    │
+                 │ Data         │   │ Messaging    │
+                 └──────────────┘   └──────────────┘
 ```
 
 ---
@@ -219,7 +239,7 @@ Socket.io is used to establish real-time communication between the frontend and 
 
 ### Redis
 
-Redis is used as a fast in-memory layer for real-time messaging and frequently accessed data.
+Redis is used as an in-memory layer for real-time messaging and frequently accessed data.
 
 ### MongoDB
 
@@ -233,23 +253,45 @@ JWT-based authentication is used to protect API endpoints and restrict access to
 
 ## 📸 Screenshots
 
-Add screenshots of the following application views here:
-
 ### Dashboard
 
 ![FleetDash Dashboard](./screenshots/dashboard.png)
 
-### Live Map
+### Live Fleet Map
 
-![FleetDash Live Map](./screenshots/live-map.png)
+![FleetDash Live Map](./screenshots/livemap.png)
 
-### Vehicle Management
+### Fleet Management
 
-![Vehicle Management](./screenshots/vehicles.png)
+![Fleet Management](./screenshots/fleetmangement.png)
+
+### Vehicle / Fleet View
+
+![Fleet View](./screenshots/Fleet.png)
+
+### Analytics
+
+![Fleet Analytics](./screenshots/Analytics.png)
 
 ### Alerts
 
-![Fleet Alerts](./screenshots/alerts.png)
+![Fleet Alerts](./screenshots/Alrts.png)
+
+### Driver Management
+
+![Driver Management](./screenshots/driver.png)
+
+### Trips
+
+![Fleet Trips](./screenshots/trips.png)
+
+### Login
+
+![FleetDash Login](./screenshots/loginpage.png)
+
+### Dark Mode
+
+![FleetDash Dark Mode](./screenshots/dark-mode.png)
 
 ---
 
@@ -258,13 +300,16 @@ Add screenshots of the following application views here:
 FleetDash was developed to demonstrate practical full-stack development concepts including:
 
 * Modern React application development
+* TypeScript development
 * REST API design
 * Real-time communication
 * Database integration
 * Authentication and authorization
 * Data visualization
+* Interactive maps
 * Responsive UI development
 * CRUD application architecture
+* PDF and Excel reporting
 * Git-based development workflow
 
 ---
@@ -290,9 +335,17 @@ Possible future enhancements include:
 
 Frontend / Full-Stack Developer
 
+Pune, Maharashtra, India
+
 * GitHub: https://github.com/kalesantosh665
 * LinkedIn: https://www.linkedin.com/in/santosh-kale-233725321/
 * Portfolio: https://kalesantosh665.github.io/portfolioo/
+
+---
+
+## ⭐ Project
+
+If you find FleetDash useful or interesting, consider giving the repository a ⭐ on GitHub.
 
 ---
 
